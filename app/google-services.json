@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "922829221905",
+    "firebase_url": "https://messaging-app-1280e.firebaseio.com",
+    "project_id": "messaging-app-1280e",
+    "storage_bucket": "messaging-app-1280e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:922829221905:android:e700d3daa12485e9de41b0",
+        "android_client_info": {
+          "package_name": "com.syhler.android.messagingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "922829221905-h5jjnh56nemkk304lh8skc90o6e1oqdp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiD1UD8He2D4wxiJwGLA5AvVxjSTWyAW4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "922829221905-h5jjnh56nemkk304lh8skc90o6e1oqdp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
