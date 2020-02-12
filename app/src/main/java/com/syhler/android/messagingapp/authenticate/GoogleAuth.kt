@@ -15,7 +15,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
-class GoogleAuth(val context: Context?, id : String)
+class GoogleAuth(private val context: Context?, id : String)
 {
 
 
@@ -70,6 +70,7 @@ class GoogleAuth(val context: Context?, id : String)
     }
 
 
+    //Move to current user
     fun isLoggedIn() : Boolean
     {
         val currentUser = firebaseAuth.currentUser
