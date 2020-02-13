@@ -8,9 +8,8 @@
               tools:context=".MainActivity">
 
     <ListView
-        android:id="@+id/listView-chat-roomsDONT"
-        android:layout_width="match_parent"
-        android:layout_height="640dp">
+        android:id="@+id/list_chat"
+        android:layout_width="match_parent" android:layout_height="640dp">
     </ListView>
     <Button
         android:id="@+id/button_log_out"

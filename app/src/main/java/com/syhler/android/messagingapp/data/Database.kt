@@ -18,15 +18,11 @@ class Database
 {
     private val database : DatabaseReference = FirebaseDatabase.getInstance().reference.root
 
-    var chatRooms : MutableLiveData<MutableList<ChatRoom>> = MutableLiveData()
-
-    init {
-        chatRooms.value = mutableListOf()
-    }
-
 
     companion object
     {
+        var chatRooms : MutableLiveData<MutableList<ChatRoom>> = MutableLiveData()
+
         @Volatile private var instance : Database? = null
 
         fun getInstance() = instance ?: synchronized(this)
@@ -46,10 +42,13 @@ class Database
         val postListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot)
             {
+                chatRooms.value = arrayListOf()
                 for (rooms in dataSnapshot.children) {
                     val roomObject = rooms.getValue(ChatRoom::class.java)!!
                     chatRooms.value?.add(roomObject)
                 }
+
+
             }
 
             override fun onCancelled(databaseError: DatabaseError) {

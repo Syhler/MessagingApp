@@ -1,7 +1,6 @@
 package com.syhler.android.messagingapp
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +12,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.syhler.android.messagingapp.authenticate.FacebookAuth
 import com.syhler.android.messagingapp.authenticate.GoogleAuth
 import com.syhler.android.messagingapp.data.Database
+import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
+import com.syhler.android.messagingapp.ui.chatroom.RoomActivity
 import kotlinx.android.synthetic.main.main_activity.*
 
 
@@ -108,7 +109,7 @@ class MainActivity : AppCompatActivity()
 
     private fun changeScene()
     {
-        val intent = Intent(this, RoomActivity::class.java)
+        val intent = Intent(this, ChatRoomActivity::class.java)
         startActivity(intent)
     }
 
