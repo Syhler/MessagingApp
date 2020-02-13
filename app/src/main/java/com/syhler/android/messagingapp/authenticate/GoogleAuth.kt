@@ -70,13 +70,6 @@ class GoogleAuth(private val context: Context?, id : String)
     }
 
 
-    //Move to current user
-    fun isLoggedIn() : Boolean
-    {
-        val currentUser = firebaseAuth.currentUser
-        return currentUser != null
-    }
-
     fun signOut(): Task<Void>? {
         // Firebase sign out
         firebaseAuth.signOut()

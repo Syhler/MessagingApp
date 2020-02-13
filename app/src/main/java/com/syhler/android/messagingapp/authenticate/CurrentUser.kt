@@ -1,6 +1,80 @@
 package com.syhler.android.messagingapp.authenticate
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import com.facebook.Profile
+import com.google.firebase.auth.FirebaseAuth
+import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import java.io.IOException
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
+
+
+
 class CurrentUser
 {
+
+
+    var fullName : String? = ""
+    lateinit var image : Bitmap
+    lateinit var authenticationMethod: AuthenticationMethod
+    private lateinit var photoUrl : String
+
+
+    init {
+        loadUserData()
+    }
+
+
+    private fun loadUserData()
+    {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val facebookCurrentUser = Profile.getCurrentProfile()
+
+        if  (currentUser!= null)
+        {
+            fullName = currentUser.displayName
+            authenticationMethod = AuthenticationMethod.GOOGLE
+            photoUrl = currentUser.photoUrl.toString()
+        }
+        else if (facebookCurrentUser != null)
+        {
+            fullName = facebookCurrentUser.name
+            authenticationMethod = AuthenticationMethod.FACEBOOK
+            photoUrl = facebookCurrentUser.getProfilePictureUri(100,100).toString()
+        }
+
+    }
+
+    //save it to disk and only load from internet if picture not already found in db
+    fun getProfileImage() : Job
+    {
+        return getBitmapFromURL(photoUrl)
+    }
+
+
+    private fun getBitmapFromURL(src: String?) : Job {
+        return CoroutineScope(IO).launch {
+            try {
+                val url = URL(src)
+                val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+                connection.doInput = true
+                connection.connect()
+                val input: InputStream = connection.getInputStream()
+                image = BitmapFactory.decodeStream(input)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                //show toast
+                TODO("show toast")
+            }
+        }
+
+    }
+
 
 }

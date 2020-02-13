@@ -1,18 +1,20 @@
 package com.syhler.android.messagingapp
 
-import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.FacebookSdk
+import com.facebook.Profile
 import com.facebook.login.LoginResult
+import com.google.firebase.auth.FirebaseAuth
+import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.authenticate.FacebookAuth
 import com.syhler.android.messagingapp.authenticate.GoogleAuth
 import kotlinx.android.synthetic.main.main_activity.*
+
 
 class MainActivity : AppCompatActivity()
 {
@@ -20,9 +22,18 @@ class MainActivity : AppCompatActivity()
     private lateinit var googleAuth: GoogleAuth
     private val facebookAuth = FacebookAuth()
 
+    override fun onStart() {
+        super.onStart()
+        if (FirebaseAuth.getInstance().currentUser != null || Profile.getCurrentProfile() != null)
+        {
+            changeScene()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FacebookSdk.sdkInitialize(applicationContext)
+
+        //FacebookSdk.sdkInitialize(applicationContext)
 
         setContentView(R.layout.main_activity)
         if (savedInstanceState == null)
@@ -30,10 +41,7 @@ class MainActivity : AppCompatActivity()
             supportFragmentManager.beginTransaction().commitNow()
         }
 
-
-        //facebook
         setupFacebookLogin()
-
 
         setupGoogleLogin()
 
@@ -53,7 +61,9 @@ class MainActivity : AppCompatActivity()
             object : FacebookCallback<LoginResult> {
                 override fun onSuccess(result: LoginResult?) {
                     if (result != null) {
-                        facebookAuth.handleFacebookAccessToken(result.accessToken)
+                        facebookAuth.handleFacebookAccessToken(result.accessToken).addOnCompleteListener {
+                            changeScene()
+                        }
                     }
                 }
 
@@ -74,11 +84,6 @@ class MainActivity : AppCompatActivity()
         googleAuth = GoogleAuth(this, getString(R.string.default_web_client_id))
 
         button_google_login.setOnClickListener { googleAuth.signIn(this) }
-        button_log_out.setOnClickListener {
-            googleAuth.signOut()?.addOnCompleteListener(this) {
-                showToast("Logged off")
-            }
-        }
     }
 
     private fun signInGoogle(requestCode: Int, data: Intent?)
@@ -89,12 +94,18 @@ class MainActivity : AppCompatActivity()
         if (task.isSuccessful) {
             // Sign in success, update UI with the signed-in user's information
             //message.text = "User logged in : ${googleAuth.firebaseAuth.currentUser?.email}"
+            changeScene()
             showToast("Login succeeded")
         } else {
             // If sign in fails, display a message to the user.
             showToast("Login failed")
-        }
-        }
+        }}
+    }
+
+    private fun changeScene()
+    {
+        val intent = Intent(this, RoomActivity::class.java)
+        startActivity(intent)
     }
 
     private fun showToast(text : String)
