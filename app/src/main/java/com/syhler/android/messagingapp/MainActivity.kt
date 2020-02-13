@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity()
                 override fun onSuccess(result: LoginResult?) {
                     if (result != null) {
                         facebookAuth.handleFacebookAccessToken(result.accessToken).addOnCompleteListener {
+                            showToast("Login succeeded")
                             changeScene()
                         }
                     }
