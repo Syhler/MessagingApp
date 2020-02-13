@@ -1,18 +1,18 @@
 package com.syhler.android.messagingapp
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
-import com.facebook.FacebookSdk
 import com.facebook.Profile
 import com.facebook.login.LoginResult
 import com.google.firebase.auth.FirebaseAuth
-import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.authenticate.FacebookAuth
 import com.syhler.android.messagingapp.authenticate.GoogleAuth
+import com.syhler.android.messagingapp.data.Database
 import kotlinx.android.synthetic.main.main_activity.*
 
 
@@ -40,6 +40,9 @@ class MainActivity : AppCompatActivity()
         {
             supportFragmentManager.beginTransaction().commitNow()
         }
+
+
+        Database.getInstance().setup()
 
         setupFacebookLogin()
 

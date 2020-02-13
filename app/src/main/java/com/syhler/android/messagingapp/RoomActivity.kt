@@ -10,6 +10,7 @@ import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.authenticate.FacebookAuth
 import com.syhler.android.messagingapp.authenticate.GoogleAuth
 import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
+import com.syhler.android.messagingapp.data.Database
 import kotlinx.android.synthetic.main.activity_rooms.*
 import kotlinx.android.synthetic.main.content_rooms.*
 import kotlinx.coroutines.Dispatchers.Main
@@ -41,6 +42,9 @@ class RoomActivity : AppCompatActivity(), View.OnClickListener {
         }
 
         button_log_out.setOnClickListener(this)
+        button2.setOnClickListener {
+            Database.getInstance().loadData()
+        }
     }
 
     private fun updateImage(bitmap: Bitmap)

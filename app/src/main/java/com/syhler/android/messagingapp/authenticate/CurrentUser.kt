@@ -2,6 +2,7 @@ package com.syhler.android.messagingapp.authenticate
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Base64
 import com.facebook.Profile
 import com.google.firebase.auth.FirebaseAuth
 import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
@@ -9,11 +10,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
-
 
 
 class CurrentUser
@@ -28,6 +29,14 @@ class CurrentUser
 
     init {
         loadUserData()
+    }
+
+    fun imageToString() : String
+    {
+        val byteOutStream = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.PNG, 100, byteOutStream)
+        val b: ByteArray = byteOutStream.toByteArray()
+        return Base64.encodeToString(b, Base64.DEFAULT)
     }
 
 
