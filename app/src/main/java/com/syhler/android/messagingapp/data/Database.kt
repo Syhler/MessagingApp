@@ -1,15 +1,16 @@
 package com.syhler.android.messagingapp.data
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.util.Base64
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.database.*
 import com.syhler.android.messagingapp.data.entites.ChatRoom
 import com.syhler.android.messagingapp.data.entites.Message
 import com.syhler.android.messagingapp.data.entites.User
 import java.io.ByteArrayOutputStream
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.collections.HashMap
 
 
@@ -61,16 +62,25 @@ class Database
     {
 
         //creates predefined chat rooms
-        val chatRoom = ChatRoom(arrayListOf(Message("test", User("", "its me"), "")), "First chat room", "This is a chat room with stuff")
+        val chatRoom = ChatRoom(arrayListOf(Message("test", User("", "its me"), getCurrentTime()),
+            Message("test", User("", "its me"), getCurrentTime())), "First chat room", "This is a chat room with stuff")
         val chatRoom2 = ChatRoom(arrayListOf(), "Second chat room", "This is a chat room with stuff")
         val chatRoom3 = ChatRoom(arrayListOf(), "Third chat room", "This is a chat room with stuff")
 
         val map = HashMap<String, Any>()
-        map.put("1",chatRoom)
-        map.put("2",chatRoom2)
-        map.put("3",chatRoom3)
+        map["1"] = chatRoom
+        map["2"] = chatRoom2
+        map["3"] = chatRoom3
 
         database.updateChildren(map)
+    }
+
+    private fun getCurrentTime() : String
+    {
+        val date: Date = Calendar.getInstance().getTime()
+        val dateFormat: DateFormat = SimpleDateFormat("yyyy-mm-dd hh:mm:ss")
+        val strDate: String = dateFormat.format(date)
+        return strDate
     }
 
     private fun imageToString(image : Bitmap) : String
