@@ -16,7 +16,6 @@ import com.syhler.android.messagingapp.authenticate.FacebookAuth
 import com.syhler.android.messagingapp.authenticate.GoogleAuth
 import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
 import com.syhler.android.messagingapp.data.Database
-import kotlinx.android.synthetic.main.activity_chat_room.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
