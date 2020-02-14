@@ -4,15 +4,18 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
+import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.syhler.android.messagingapp.MainActivity
 import com.syhler.android.messagingapp.R
+import androidx.lifecycle.Observer
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.authenticate.FacebookAuth
 import com.syhler.android.messagingapp.authenticate.GoogleAuth
 import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
 import com.syhler.android.messagingapp.data.Database
+import com.syhler.android.messagingapp.data.repos.ChatRoomRepository
 import kotlinx.android.synthetic.main.activity_rooms.*
 import kotlinx.android.synthetic.main.content_rooms.*
 import kotlinx.coroutines.Dispatchers.Main
@@ -32,9 +35,9 @@ class RoomActivity : AppCompatActivity(), View.OnClickListener {
 
         googleAuth = GoogleAuth(this, getString(R.string.default_web_client_id))
 
-        val chatRoomAdapter = ChatRoomAdapter(this, Database.getInstance().chatRooms)
+        val chatRoomAdapter = ChatRoomAdapter(this, Database.chatRooms)
 
-        //listView_chat_rooms.adapter = chatRoomAdapter
+        findViewById<ListView>(R.id.list_chat).adapter = chatRoomAdapter
 
 /*
         listView_chat_rooms.setOnItemClickListener{adapterView, view, position: Int, id: Long ->
@@ -52,8 +55,6 @@ class RoomActivity : AppCompatActivity(), View.OnClickListener {
             updateImage(currentUser.image)
         }
 
-
-        //button_log_out.setOnClickListener(this)
 
     }
 
