@@ -79,7 +79,7 @@ class CurrentUser
             } catch (e: IOException) {
                 e.printStackTrace()
                 //show toast
-                TODO("show toast")
+                //TODO("show toast")
             }
         }
 

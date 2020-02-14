@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.authenticate.FacebookAuth
 import com.syhler.android.messagingapp.authenticate.GoogleAuth
 import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
 import com.syhler.android.messagingapp.data.Database
+import com.syhler.android.messagingapp.data.repos.ChatRoomRepository
 import kotlinx.android.synthetic.main.activity_rooms.*
 import kotlinx.android.synthetic.main.content_rooms.*
 import kotlinx.coroutines.Dispatchers.Main
@@ -43,8 +45,10 @@ class RoomActivity : AppCompatActivity(), View.OnClickListener {
 
         button_log_out.setOnClickListener(this)
         button2.setOnClickListener {
-            Database.getInstance().loadData()
+            //Database.getInstance().loadChatRooms()
         }
+
+
     }
 
     private fun updateImage(bitmap: Bitmap)
