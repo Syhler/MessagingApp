@@ -12,6 +12,7 @@ data class Message(
     val user: User,
     val timespan: Long)
 {
+    lateinit var image : String
 
     @set:Exclude @get:Exclude var date : Date = Date()
 

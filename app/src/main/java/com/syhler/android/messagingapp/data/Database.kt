@@ -134,13 +134,7 @@ class Database
         return Date(ts.time)
     }
 
-    private fun imageToString(image : Bitmap) : String
-    {
-        val byteOutStream = ByteArrayOutputStream()
-        image.compress(Bitmap.CompressFormat.PNG, 100, byteOutStream)
-        val b: ByteArray = byteOutStream.toByteArray()
-        return Base64.encodeToString(b, Base64.DEFAULT)
-    }
+
 
 
 

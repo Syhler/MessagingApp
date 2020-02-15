@@ -1,5 +1,11 @@
 package com.syhler.android.messagingapp.data.entites
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
+import com.google.firebase.firestore.Exclude
+
+
 data class User(
     val image: String?,
     val fullName: String,
@@ -7,8 +13,6 @@ data class User(
 {
     constructor() : this(null, "", "")
 
-    fun stringToBitmap()
-    {
 
-    }
+
 }

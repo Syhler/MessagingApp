@@ -1,7 +1,9 @@
 package com.syhler.android.messagingapp.ui.chatroomlist.chatroom
 
+import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Base64
 import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.TextView
@@ -13,6 +15,7 @@ import com.syhler.android.messagingapp.data.entites.Message
 import com.syhler.android.messagingapp.data.entites.User
 import com.syhler.android.messagingapp.utillities.Dependencies
 import kotlinx.android.synthetic.main.activity_chat_room.*
+import java.io.ByteArrayOutputStream
 
 class ChatRoomActivity : AppCompatActivity() {
 
@@ -74,22 +77,20 @@ class ChatRoomActivity : AppCompatActivity() {
         //make empty check
 
         val currentUser = CurrentUser.getInstace()
-        val user = User("", currentUser.fullName!!, currentUser.authenticationID)
+        val user = User(imageToString(currentUser.image), currentUser.fullName!!, currentUser.authenticationID)
         val message = Message(inputField.text.toString(), user, System.currentTimeMillis())
         viewModel.addMessage(message)
         messageAdapter.add(message)
         inputField.setText("")
 
-
-
-        /*
-        val debugMessage = message.copy()
-        debugMessage.text += " : debug"
-        debugMessage.user.userAuthID = ""
-        viewModel.addMessage(debugMessage)
-         */
-
     }
 
+    private fun imageToString(image : Bitmap) : String
+    {
+        val byteOutStream = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.PNG, 100, byteOutStream)
+        val b: ByteArray = byteOutStream.toByteArray()
+        return Base64.encodeToString(b, Base64.DEFAULT)
+    }
 
 }

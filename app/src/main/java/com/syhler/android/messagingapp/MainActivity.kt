@@ -9,6 +9,7 @@ import com.facebook.FacebookException
 import com.facebook.Profile
 import com.facebook.login.LoginResult
 import com.google.firebase.auth.FirebaseAuth
+import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.authenticate.FacebookAuth
 import com.syhler.android.messagingapp.authenticate.GoogleAuth
 import com.syhler.android.messagingapp.data.Database
@@ -64,6 +65,7 @@ class MainActivity : AppCompatActivity()
                 override fun onSuccess(result: LoginResult?) {
                     if (result != null) {
                         facebookAuth.handleFacebookAccessToken(result.accessToken).addOnCompleteListener {
+                            CurrentUser.getInstace() //instantiate current user
                             showToast("Login succeeded")
                             changeScene()
                         }
@@ -92,11 +94,10 @@ class MainActivity : AppCompatActivity()
     private fun signInGoogle(requestCode: Int, data: Intent?)
     {
         //make a null check
-
         googleAuth.signInGoogle(requestCode, data)?.addOnCompleteListener(this) { task ->
         if (task.isSuccessful) {
             // Sign in success, update UI with the signed-in user's information
-            //message.text = "User logged in : ${googleAuth.firebaseAuth.currentUser?.email}"
+            CurrentUser.getInstace() //instantiate current user
             changeScene()
             showToast("Login succeeded")
         } else {
