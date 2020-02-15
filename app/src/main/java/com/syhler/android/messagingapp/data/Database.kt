@@ -18,11 +18,11 @@ class Database
 
     private val database = FirebaseFirestore.getInstance()
     private val CHATROOM_PREFIX = "chat_rooms"
+    var chatRooms : MutableList<ChatRoom> = arrayListOf()
 
 
     companion object
     {
-        var chatRooms : MutableLiveData<MutableList<ChatRoom>> = MutableLiveData()
 
         var messages : MutableLiveData<MutableList<Message>> = MutableLiveData()
 
@@ -38,7 +38,7 @@ class Database
     fun setup()
     {
         predefinedChatRooms()
-        loadChatRooms()
+        //loadChatRooms()
     }
 
     fun loadMessageFrom(fromTimestamp: Long, numberOfRecords: Long, chatRoomKey : String)
@@ -59,7 +59,7 @@ class Database
 
     private fun loadLatestMessageFromRooms()
     {
-        chatRooms.value?.forEach {
+        chatRooms.forEach {
             database.collection("$CHATROOM_PREFIX/${it.key}/messages").orderBy("timespan").get().addOnSuccessListener { query ->
                 query.documents.forEach { i ->
                     val tempMessage = i.toObject(Message::class.java)
@@ -73,19 +73,23 @@ class Database
         }
     }
 
-    fun loadChatRooms()
+    private fun loadChatRooms()
     {
-        chatRooms.value = arrayListOf()
-        database.collection(CHATROOM_PREFIX).get().addOnSuccessListener { it ->
-            it.forEach{
+        //chatRooms = arrayListOf()
+        database.collection(CHATROOM_PREFIX).addSnapshotListener {querySnapshot, firebaseFirestoreException ->
+            querySnapshot?.documents?.forEach {
                 val tempChatRoom = it.toObject(ChatRoom::class.java)
-                tempChatRoom.key = it.id
-                chatRooms.value?.add(tempChatRoom)
+                tempChatRoom?.key = it.id
+                chatRooms.add(tempChatRoom!!)
+
             }
-        }
-            .addOnSuccessListener {
+
+
+        }.also {
             loadLatestMessageFromRooms()
+
         }
+
     }
 
 
@@ -104,7 +108,7 @@ class Database
 
         val message1 = Message("test 1", User("", "its me"), getCurrentTimeSpan(1000))
         val message2 = Message("test 2", User("", "its me"), getCurrentTimeSpan(0))
-        val message3 = Message("test 3", User("", "its me"), getCurrentTimeSpan(0))
+        val message3 = Message("test 3", User("", "its me"), getCurrentTimeSpan(10000))
 
         database.document("$CHATROOM_PREFIX/4499b251-faf8-45f7-9f2e-a83a0f35fb50/messages/c9f92cd5-88ed-4aee-9c9a-0fa4c4d243e4").set(message1)
         database.document("$CHATROOM_PREFIX/bc34617e-fe22-468f-993d-8b202fca7788/messages/18e8d9f7-e5e5-4703-95a8-60ac98656a67").set(message2)

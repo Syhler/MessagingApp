@@ -6,11 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.data.entites.ChatRoom
 
-class ChatRoomAdapter(context: Context, val chatRooms: MutableLiveData<MutableList<ChatRoom>>) : BaseAdapter()
+class ChatRoomAdapter(context: Context, val chatRooms: List<ChatRoom>) : BaseAdapter()
 {
 
     val layoutInflater = context.applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -28,7 +29,14 @@ class ChatRoomAdapter(context: Context, val chatRooms: MutableLiveData<MutableLi
         val chatRoom = getItem(position) as ChatRoom
 
         title.text = chatRoom.name
-        description.text = chatRoom.description
+        if (chatRoom.messages.size > 0)
+        {
+            description.text = chatRoom.description + " " + chatRoom.messages[0].text
+
+        }
+        else{
+            description.text = chatRoom.description
+        }
 
 
 
@@ -38,7 +46,7 @@ class ChatRoomAdapter(context: Context, val chatRooms: MutableLiveData<MutableLi
 
     override fun getItem(position: Int): Any
     {
-        return chatRooms.value?.get(position)!!
+        return chatRooms[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -47,10 +55,6 @@ class ChatRoomAdapter(context: Context, val chatRooms: MutableLiveData<MutableLi
 
     override fun getCount(): Int
     {
-        return if (chatRooms.value == null) {
-            5
-        } else{
-            chatRooms.value!!.size
-        }
+        return chatRooms.size
     }
 }

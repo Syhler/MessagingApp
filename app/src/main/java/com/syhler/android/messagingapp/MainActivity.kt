@@ -13,7 +13,6 @@ import com.syhler.android.messagingapp.authenticate.FacebookAuth
 import com.syhler.android.messagingapp.authenticate.GoogleAuth
 import com.syhler.android.messagingapp.data.Database
 import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
-import com.syhler.android.messagingapp.ui.chatroom.RoomActivity
 import kotlinx.android.synthetic.main.main_activity.*
 
 
@@ -41,7 +40,6 @@ class MainActivity : AppCompatActivity()
         {
             supportFragmentManager.beginTransaction().commitNow()
         }
-
 
         Database.getInstance().setup()
 
