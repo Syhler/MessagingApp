@@ -1,4 +1,4 @@
-package com.syhler.android.messagingapp.ui.chatroom
+package com.syhler.android.messagingapp.ui.chatroomlist
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,12 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.data.entites.ChatRoom
 
-class ChatRoomAdapter(context: Context, val chatRooms: List<ChatRoom>) : BaseAdapter()
+class ChatRoomListAdapter(context: Context, val chatRooms: List<ChatRoom>) : BaseAdapter()
 {
 
     val layoutInflater = context.applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

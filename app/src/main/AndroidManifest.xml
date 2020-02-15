@@ -10,7 +10,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.chatroom.ChatRoomActivity">
+        <activity android:name=".ui.chatroomlist.chatroom.ChatRoomActivity">
+        </activity>
+        <activity android:name=".ui.chatroomlist.ChatRoomListActivity">
         </activity>
         <activity android:name=".MainActivity">
             <intent-filter>

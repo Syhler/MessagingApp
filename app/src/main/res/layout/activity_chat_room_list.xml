@@ -7,10 +7,15 @@
               android:orientation="vertical"
               tools:context=".MainActivity">
 
+    <FrameLayout
+        android:id="@+id/chat_room_fragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" />
+
     <ListView
-        android:id="@+id/listView-chat-roomsDONT"
-        android:layout_width="match_parent"
-        android:layout_height="640dp">
+        android:id="@+id/list_chat"
+        android:layout_width="match_parent" android:layout_height="640dp">
     </ListView>
     <Button
         android:id="@+id/button_log_out"
@@ -20,5 +25,7 @@
         android:layout_marginEnd="5dp" android:layout_marginRight="5dp"
         android:layout_marginBottom="20dp" android:background="@color/colorAccent"
         android:text="@string/log_out"/>
+
+
 
 </LinearLayout>

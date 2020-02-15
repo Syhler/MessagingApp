@@ -37,7 +37,7 @@ class Database
 
     fun setup()
     {
-        predefinedChatRooms()
+        //predefinedChatRooms()
         //loadChatRooms()
     }
 

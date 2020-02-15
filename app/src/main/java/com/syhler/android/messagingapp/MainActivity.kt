@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.syhler.android.messagingapp.authenticate.FacebookAuth
 import com.syhler.android.messagingapp.authenticate.GoogleAuth
 import com.syhler.android.messagingapp.data.Database
-import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
+import com.syhler.android.messagingapp.ui.chatroomlist.ChatRoomListActivity
 import kotlinx.android.synthetic.main.main_activity.*
 
 
@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity()
 
     private fun changeScene()
     {
-        val intent = Intent(this, ChatRoomActivity::class.java)
+        val intent = Intent(this, ChatRoomListActivity::class.java)
         startActivity(intent)
     }
 

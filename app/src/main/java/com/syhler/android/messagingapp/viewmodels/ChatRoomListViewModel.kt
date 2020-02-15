@@ -2,26 +2,20 @@ package com.syhler.android.messagingapp.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.QuerySnapshot
 import com.syhler.android.messagingapp.data.entites.ChatRoom
 import com.syhler.android.messagingapp.data.entites.Message
 import com.syhler.android.messagingapp.data.repos.ChatRoomRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 import java.sql.Timestamp
 import java.util.*
 
 
-class ChatRoomViewModel : ViewModel()
+class ChatRoomListViewModel : ViewModel()
 {
     private val TAG = "CHATROOM_VIEW_MODEL"
     private val repo = ChatRoomRepository()

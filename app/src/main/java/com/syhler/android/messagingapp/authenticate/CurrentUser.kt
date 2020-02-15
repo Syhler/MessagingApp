@@ -25,6 +25,7 @@ class CurrentUser
     lateinit var image : Bitmap
     lateinit var authenticationMethod: AuthenticationMethod
     private lateinit var photoUrl : String
+    var chatRoomKey : String = ""
 
 
     init {
