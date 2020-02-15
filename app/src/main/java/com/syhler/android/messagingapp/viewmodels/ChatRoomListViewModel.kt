@@ -10,7 +10,7 @@ import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.QuerySnapshot
 import com.syhler.android.messagingapp.data.entites.ChatRoom
 import com.syhler.android.messagingapp.data.entites.Message
-import com.syhler.android.messagingapp.data.repos.ChatRoomRepository
+import com.syhler.android.messagingapp.data.repos.ChatRoomListRepository
 import java.sql.Timestamp
 import java.util.*
 
@@ -18,7 +18,7 @@ import java.util.*
 class ChatRoomListViewModel : ViewModel()
 {
     private val TAG = "CHATROOM_VIEW_MODEL"
-    private val repo = ChatRoomRepository()
+    private val repo = ChatRoomListRepository()
     private var chatRooms : MutableLiveData<List<ChatRoom>> = MutableLiveData()
 
 

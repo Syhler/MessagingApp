@@ -7,8 +7,6 @@ import android.view.View
 import android.widget.BaseAdapter
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.syhler.android.messagingapp.MainActivity
@@ -38,12 +36,12 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
 
         googleAuth = GoogleAuth(this, getString(R.string.default_web_client_id))
 
-        val chatRoomViewModel = ViewModelProviders.of(this)
+        val chatRoomListViewModel = ViewModelProviders.of(this)
             .get(ChatRoomListViewModel::class.java)
 
 
         //take a look at this later TODO(LOOOK)
-        chatRoomViewModel.getChatRooms2().observe(this, Observer {
+        chatRoomListViewModel.getChatRooms2().observe(this, Observer {
 
             val chatRoomAdapter = ChatRoomListAdapter(this, it)
             val listView = findViewById<ListView>(R.id.list_chat)

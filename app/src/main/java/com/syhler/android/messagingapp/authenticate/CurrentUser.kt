@@ -20,17 +20,33 @@ import java.net.URL
 class CurrentUser
 {
 
-
     var fullName : String? = ""
     lateinit var image : Bitmap
     lateinit var authenticationMethod: AuthenticationMethod
     private lateinit var photoUrl : String
     var chatRoomKey : String = ""
-
+    var authenticationID : String = ""
 
     init {
         loadUserData()
     }
+
+
+    companion object
+    {
+        private var instance : CurrentUser? = null
+
+        fun getInstace() : CurrentUser
+        {
+            return if (instance == null) {
+                instance = CurrentUser()
+                instance!!
+            } else{
+                instance!!
+            }
+        }
+    }
+
 
     fun imageToString() : String
     {
@@ -51,12 +67,14 @@ class CurrentUser
             fullName = currentUser.displayName
             authenticationMethod = AuthenticationMethod.GOOGLE
             photoUrl = currentUser.photoUrl.toString()
+            authenticationID = currentUser.uid
         }
         else if (facebookCurrentUser != null)
         {
             fullName = facebookCurrentUser.name
             authenticationMethod = AuthenticationMethod.FACEBOOK
             photoUrl = facebookCurrentUser.getProfilePictureUri(100,100).toString()
+            authenticationID = facebookCurrentUser.id
         }
 
     }

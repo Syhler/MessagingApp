@@ -12,7 +12,7 @@ import com.syhler.android.messagingapp.data.entites.ChatRoom
 class ChatRoomListAdapter(context: Context, val chatRooms: List<ChatRoom>) : BaseAdapter()
 {
 
-    val layoutInflater = context.applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    private val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     private lateinit var row : View
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View

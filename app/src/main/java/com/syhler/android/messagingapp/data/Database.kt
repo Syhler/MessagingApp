@@ -37,7 +37,7 @@ class Database
 
     fun setup()
     {
-        //predefinedChatRooms()
+        predefinedChatRooms()
         //loadChatRooms()
     }
 
@@ -106,13 +106,18 @@ class Database
 
         //removes in the final commit TODO(REMOVE)
 
-        val message1 = Message("test 1", User("", "its me"), getCurrentTimeSpan(1000))
-        val message2 = Message("test 2", User("", "its me"), getCurrentTimeSpan(0))
-        val message3 = Message("test 3", User("", "its me"), getCurrentTimeSpan(10000))
+        val message1 = Message("test 1", User("", "its me",""), getCurrentTimeSpan(1000))
+        val message2 = Message("test 2", User("", "its me",""), getCurrentTimeSpan(0))
+        val message3 = Message("test 3", User("", "its me",""), getCurrentTimeSpan(10000))
 
-        database.document("$CHATROOM_PREFIX/4499b251-faf8-45f7-9f2e-a83a0f35fb50/messages/c9f92cd5-88ed-4aee-9c9a-0fa4c4d243e4").set(message1)
-        database.document("$CHATROOM_PREFIX/bc34617e-fe22-468f-993d-8b202fca7788/messages/18e8d9f7-e5e5-4703-95a8-60ac98656a67").set(message2)
-        database.document("$CHATROOM_PREFIX/f60c7c5f-e2ed-46b0-acbe-f2eee9e4bacb/messages/8164af31-b986-4bac-9ef5-01b04f8d921c").set(message3)
+        database.document("$CHATROOM_PREFIX/4499b251-faf8-45f7-9f2e-a83a0f35fb50/messages/c9f92cd5-88ed-4aee-9c9a-0fa4c4d243e4")
+            .set(message1)
+        database.document("$CHATROOM_PREFIX/bc34617e-fe22-468f-993d-8b202fca7788/messages/18e8d9f7-e5e5-4703-95a8-60ac98656a67")
+            .set(message2)
+        database.document("$CHATROOM_PREFIX/f60c7c5f-e2ed-46b0-acbe-f2eee9e4bacb/messages/8164af31-b986-4bac-9ef5-01b04f8d921c")
+            .set(message3)
+        database.document("$CHATROOM_PREFIX/f60c7c5f-e2ed-46b0-acbe-f2eee9e4bacb/messages/8164af31-b986-4bac-9ef5-01b04f8d921c")
+            .set(message2)
 
     }
 

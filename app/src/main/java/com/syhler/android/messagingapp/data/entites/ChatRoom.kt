@@ -1,9 +1,10 @@
 package com.syhler.android.messagingapp.data.entites
 
 import com.google.firebase.firestore.Exclude
-import java.sql.Timestamp
-import java.util.*
+import com.google.firebase.firestore.IgnoreExtraProperties
 
+
+@IgnoreExtraProperties
 data class ChatRoom(val name : String,
                     val description : String)
 {
