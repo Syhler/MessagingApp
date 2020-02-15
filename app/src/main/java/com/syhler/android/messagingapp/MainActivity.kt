@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity()
             supportFragmentManager.beginTransaction().commitNow()
         }
 
-        Database.getInstance().setup()
+        Database.getInstance().setupPredefinedChatRooms()
 
         setupFacebookLogin()
 
