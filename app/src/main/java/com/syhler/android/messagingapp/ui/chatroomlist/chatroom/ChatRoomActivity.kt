@@ -18,7 +18,9 @@ import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
 import com.syhler.android.messagingapp.data.entites.User
+import com.syhler.android.messagingapp.ui.chatroomlist.chatroom.adapter.MessageAdapter
 import com.syhler.android.messagingapp.utillities.Dependencies
+import com.syhler.android.messagingapp.viewmodels.ChatRoomViewModel
 import kotlinx.android.synthetic.main.activity_chat_room.*
 import java.io.ByteArrayOutputStream
 
@@ -42,7 +44,8 @@ class ChatRoomActivity : AppCompatActivity() {
                 .get(ChatRoomViewModel::class.java)
         }
 
-        messageAdapter = MessageAdapter(this)
+        messageAdapter =
+            MessageAdapter(this)
 
         val listView = findViewById<ListView>(R.id.messages_view)
         listView.adapter = messageAdapter

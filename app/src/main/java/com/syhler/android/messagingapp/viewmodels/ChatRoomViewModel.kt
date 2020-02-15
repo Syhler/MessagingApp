@@ -1,4 +1,4 @@
-package com.syhler.android.messagingapp.ui.chatroomlist.chatroom
+package com.syhler.android.messagingapp.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.LiveData

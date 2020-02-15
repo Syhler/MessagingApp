@@ -1,7 +1,7 @@
 package com.syhler.android.messagingapp.utillities
 
 import com.syhler.android.messagingapp.data.repos.MessageRepository
-import com.syhler.android.messagingapp.ui.chatroomlist.chatroom.ChatRoomViewModelFactory
+import com.syhler.android.messagingapp.viewmodels.factory.ChatRoomViewModelFactory
 
 object Dependencies
 {
