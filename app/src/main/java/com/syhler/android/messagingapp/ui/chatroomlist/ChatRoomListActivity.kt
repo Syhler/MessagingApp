@@ -64,20 +64,11 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
 
         })
 
-        currentUser.getProfileImage().invokeOnCompletion {
-            updateImage(currentUser.image)
-        }
 
         //button_log_out.setOnClickListener(this)
 
     }
 
-    private fun updateImage(bitmap: Bitmap)
-    {
-        GlobalScope.launch(Dispatchers.Main) {
-            //profile_pic.setImageBitmap(bitmap)
-        }
-    }
 
     private fun signOut() {
         when(currentUser.authenticationMethod)

@@ -19,7 +19,6 @@ import com.syhler.android.messagingapp.ui.chatroomlist.chatroom.adapter.MessageA
 import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.Dependencies
 import com.syhler.android.messagingapp.viewmodels.ChatRoomViewModel
-import kotlinx.android.synthetic.main.activity_chat_room.*
 
 
 class ChatRoomActivity : AppCompatActivity() {
@@ -82,7 +81,7 @@ class ChatRoomActivity : AppCompatActivity() {
         viewModel.latestMessage.observe(this, Observer {message ->
             if (message != null)
             {
-                if (message.user.userAuthID != CurrentUser.getInstace().authenticationID)
+                if (message.user.userAuthID != CurrentUser.getInstance().authenticationID)
                 {
                     messageAdapter.add(message)
                 }
@@ -143,8 +142,8 @@ class ChatRoomActivity : AppCompatActivity() {
 
     private fun sendMessage(text: String, image : String)
     {
-        val currentUser = CurrentUser.getInstace()
-        val user = User(currentUser.imageToString(), currentUser.fullName!!, currentUser.authenticationID)
+        val currentUser = CurrentUser.getInstance()
+        val user = User(currentUser.getImageAsByte(), currentUser.fullName!!, currentUser.authenticationID)
         val message = Message(text, user, System.currentTimeMillis(), image)
         viewModel.addMessage(message)
         messageAdapter.add(message)

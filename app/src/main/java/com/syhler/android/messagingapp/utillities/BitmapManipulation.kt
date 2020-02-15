@@ -3,7 +3,11 @@ package com.syhler.android.messagingapp.utillities
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.util.Log
 import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
 
 class BitmapManipulation
 {
@@ -34,6 +38,20 @@ class BitmapManipulation
         fun fromPath(path : String) : Bitmap
         {
             return BitmapFactory.decodeFile(path)
+        }
+
+        fun getFromURL(src: String?) : Bitmap?
+        {
+            return try {
+                val url = URL(src)
+                val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+                connection.doInput = true
+                connection.connect()
+                BitmapFactory.decodeStream(connection.inputStream)
+            } catch (e: IOException) {
+                Log.w("BitmapManipulation", "converting url to bitmap failed", e)
+                null
+            }
         }
     }
 }

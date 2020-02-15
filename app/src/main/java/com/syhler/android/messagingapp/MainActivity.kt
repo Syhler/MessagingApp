@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity()
                 override fun onSuccess(result: LoginResult?) {
                     if (result != null) {
                         facebookAuth.handleFacebookAccessToken(result.accessToken).addOnCompleteListener {
-                            CurrentUser.getInstace() //instantiate current user
+                            CurrentUser.getInstance() //instantiate current user
                             showToast("Login succeeded")
                             changeScene()
                         }
@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity()
         googleAuth.signInGoogle(requestCode, data)?.addOnCompleteListener(this) { task ->
         if (task.isSuccessful) {
             // Sign in success, update UI with the signed-in user's information
-            CurrentUser.getInstace() //instantiate current user
+            CurrentUser.getInstance() //instantiate current user
             changeScene()
             showToast("Login succeeded")
         } else {

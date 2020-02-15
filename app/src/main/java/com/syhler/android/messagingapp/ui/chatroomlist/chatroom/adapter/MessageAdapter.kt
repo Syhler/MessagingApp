@@ -48,7 +48,7 @@ class MessageAdapter(context: Context) : BaseAdapter()
         val message = messages[position]
         val view : View
 
-        if (message.isBelongToCurrentUser(CurrentUser.getInstace()))
+        if (message.isBelongToCurrentUser(CurrentUser.getInstance()))
         {
             view = setupViewHolderCurrentUser()
 
