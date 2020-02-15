@@ -23,7 +23,7 @@ class CurrentUser
     var fullName : String? = ""
     lateinit var image : Bitmap
     lateinit var authenticationMethod: AuthenticationMethod
-    private lateinit var photoUrl : String
+    lateinit var photoUrl : String
     var chatRoomKey : String = ""
     var authenticationID : String = ""
 

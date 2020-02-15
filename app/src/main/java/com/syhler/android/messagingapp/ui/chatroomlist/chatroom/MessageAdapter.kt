@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.CalendarView
 import android.widget.ImageView
 import android.widget.TextView
 import com.syhler.android.messagingapp.R
@@ -53,7 +52,16 @@ class MessageAdapter(context: Context) : BaseAdapter()
         {
             view = messageInflater.inflate(R.layout.current_user_message, null)
             holder.messageBody = view.findViewById(R.id.message_body)
+            holder.image = view.findViewById(R.id.message_image)
             view.tag = holder
+
+            if (!message.image.isBlank())
+            {
+                val image = getImageAsBitmapFromString(message.image)
+                holder.messageBody.visibility = View.GONE
+                holder.image.setImageBitmap(image)
+            }
+
             holder.messageBody.text = message.text
         }
         else
@@ -62,8 +70,9 @@ class MessageAdapter(context: Context) : BaseAdapter()
             holder.avatar = view.findViewById(R.id.message_avatar)
             holder.name = view.findViewById(R.id.message_owner_name)
             holder.messageBody = view.findViewById(R.id.message_body)
-            holder.image = view.findViewById(R.id.message_image)
             holder.date = view.findViewById(R.id.message_date)
+            holder.image = view.findViewById(R.id.message_image)
+
             view.tag = holder
 
             var calendar = Calendar.getInstance()
@@ -71,9 +80,10 @@ class MessageAdapter(context: Context) : BaseAdapter()
             var dateFormatter = SimpleDateFormat("HH:mm")
             var dateString = dateFormatter.format(message.date)
 
+
             if (!message.image.isBlank())
             {
-                val image = getImageAsBitmap(message.image)
+                val image = getImageAsBitmapFromString(message.image)
                 holder.messageBody.visibility = View.GONE
                 holder.image.setImageBitmap(image)
             }
@@ -81,7 +91,7 @@ class MessageAdapter(context: Context) : BaseAdapter()
             //holder.date.text = dateFormatter.format(message.date)
             holder.name.text = message.user.fullName +" - " + dateString
             holder.messageBody.text = message.text
-            val image = getImageAsBitmap(message.user.image)
+            val image = getImageAsBitmapFromString(message.user.image)
             if (image != null)
             {
                 holder.avatar.setImageBitmap(image)
@@ -105,7 +115,12 @@ class MessageAdapter(context: Context) : BaseAdapter()
         return messages.size
     }
 
-    fun getImageAsBitmap(image : String?) : Bitmap?
+    fun getImageAsBitmapFromPath(path : String) : Bitmap?
+    {
+        return BitmapFactory.decodeFile(path)
+    }
+
+    fun getImageAsBitmapFromString(image : String?) : Bitmap?
     {
         return try {
             val encodeByte: ByteArray = Base64.decode(image, Base64.DEFAULT)

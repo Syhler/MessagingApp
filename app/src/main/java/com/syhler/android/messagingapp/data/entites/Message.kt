@@ -10,13 +10,14 @@ import java.util.*
 data class Message(
     var text: String,
     val user: User,
-    val timespan: Long)
+    val timespan: Long,
+    var image : String)
 {
-    lateinit var image : String
+
 
     @set:Exclude @get:Exclude var date : Date = Date()
 
-    constructor() : this("", User(),0L)
+    constructor() : this("", User(),0L, "")
 
     fun isBelongToCurrentUser(currentUser: CurrentUser) : Boolean
     {
