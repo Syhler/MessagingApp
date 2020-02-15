@@ -41,7 +41,7 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
 
 
         //take a look at this later TODO(LOOOK)
-        chatRoomListViewModel.getChatRooms2().observe(this, Observer {
+        chatRoomListViewModel.getChatRooms().observe(this, Observer {
 
             val chatRoomAdapter = ChatRoomListAdapter(this, it)
             val listView = findViewById<ListView>(R.id.list_chat)

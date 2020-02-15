@@ -21,33 +21,7 @@ class ChatRoomListViewModel : ViewModel()
     private val repo = ChatRoomListRepository()
     private var chatRooms : MutableLiveData<List<ChatRoom>> = MutableLiveData()
 
-
     fun getChatRooms() : LiveData<List<ChatRoom>>
-    {
-        repo.getChatRooms().addSnapshotListener(EventListener<QuerySnapshot>{ value, e ->
-            if (e != null)
-            {
-                Log.w(TAG, "EventListener failed",e)
-                return@EventListener
-            }
-
-            val chatRoomList : MutableList<ChatRoom> = mutableListOf()
-            for (doc in value!!)
-            {
-                val tempChatRoom = doc.toObject(ChatRoom::class.java)
-                tempChatRoom.key = doc.id
-                chatRoomList.add(tempChatRoom)
-            }
-
-
-            chatRoomList.sortBy { i -> i.getLatestMessageDate() }
-            chatRooms.value = chatRoomList
-
-        })
-        return chatRooms
-    }
-
-    fun getChatRooms2() : LiveData<List<ChatRoom>>
     {
         repo.getChatRooms().get().addOnSuccessListener {
             val chatRoomList : MutableList<ChatRoom> = mutableListOf()

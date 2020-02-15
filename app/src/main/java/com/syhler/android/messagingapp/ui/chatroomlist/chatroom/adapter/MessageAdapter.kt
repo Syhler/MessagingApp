@@ -23,9 +23,8 @@ class MessageAdapter(context: Context) : BaseAdapter()
 
     private val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    private var holder =
-        MessageViewHolder()
-    //private val currentUser = CurrentUser()
+    private var holder = MessageViewHolder()
+
     private val messages : MutableList<Message> = arrayListOf()
 
     fun addAll(message : List<Message>)
@@ -55,11 +54,14 @@ class MessageAdapter(context: Context) : BaseAdapter()
 
             view.tag = holder
 
-            if (messageContainsImage(message.image)) {
+            if (messageContainsImage(message.image))
+            {
                 displayImage(message.image)
             }
-
-            holder.messageBody.text = message.text
+            else
+            {
+                holder.messageBody.text = message.text
+            }
         }
         else
         {
@@ -67,18 +69,19 @@ class MessageAdapter(context: Context) : BaseAdapter()
 
             view.tag = holder
 
+            holder.name.text = message.user.fullName +" - " + getTimeNow(message.date)
+            setIncomingPicture(message.user.image)
+
             if (messageContainsImage(message.image))
             {
                 displayImage(message.image)
             }
+            else
+            {
+                holder.messageBody.text = message.text
 
-            setIncomingPicture(message.user.image)
-
-            holder.name.text = message.user.fullName +" - " + getTimeNow(message.date)
-            holder.messageBody.text = message.text
-
+            }
         }
-
         return view
     }
 

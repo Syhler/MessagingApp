@@ -38,7 +38,7 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
         return messages
     }
 
-    fun getLatestMessages(fromTimeStamp: Long)
+    private fun getLatestMessages(fromTimeStamp: Long)
     {
         messageRepository.getLatestMessage(fromTimeStamp).addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
             if (e != null)
