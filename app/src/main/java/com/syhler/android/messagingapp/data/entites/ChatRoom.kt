@@ -2,6 +2,7 @@ package com.syhler.android.messagingapp.data.entites
 
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.IgnoreExtraProperties
+import java.io.Serializable
 
 
 @IgnoreExtraProperties

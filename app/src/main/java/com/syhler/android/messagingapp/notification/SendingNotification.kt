@@ -6,11 +6,18 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.google.firebase.iid.FirebaseInstanceId
+import com.syhler.android.messagingapp.authenticate.CurrentUser
+import com.syhler.android.messagingapp.data.entites.Message
+import com.syhler.android.messagingapp.utillities.BitmapManipulation
+import com.syhler.android.messagingapp.utillities.KeyFields
 import org.json.JSONException
 import org.json.JSONObject
 
-class SendingNotfication(context: Context)
+class SendingNotification(context: Context)
 {
+    private val TAG = "SendingNotification"
+
     private val fcmAPI : String = "https://fcm.googleapis.com/fcm/send"
     private val serverKey = "key=AAAA1tzocBE:APA91bFT_hVsC1KnILNEdC1ZsjuMgKUkbYA81bjPi19ce38-Ul-6_x8waygw7N79cfn67Zbf8Mep79LGNQdsr8VnvOftnjVLSyOjF-qXYTOEVUUVC54KmXkRmT2zQpCp7_N0q-KebJGW"
     private val contentType = "application/json"
@@ -19,16 +26,26 @@ class SendingNotfication(context: Context)
         Volley.newRequestQueue(context)
     }
 
-    fun sendNotfication(topicName : String, message : String)
+    fun sendNotification(chatRoomKey : String?, message : Message, chatRoomName : String?)
     {
-        val topic = "/topics/" + topicName //topic has to match what the receiver subscribed to
+        if (chatRoomKey == null || chatRoomKey.isBlank())
+        {
+            Log.w(TAG, "topic name is empty")
+            return
+        }
+
+        val topic = "/topics/$chatRoomKey" //topic has to match what the receiver subscribed to
 
         val notification = JSONObject()
         val notificationBody = JSONObject()
 
         try {
-            notificationBody.put("title", "Enter_title")
-            notificationBody.put("message", message)   //Enter your notification message
+            notificationBody.put("title", "New message from ${message.user.fullName} : $chatRoomName")
+            notificationBody.put("message", message.text)
+            notificationBody.put(KeyFields.chatRoomKey, chatRoomKey) //TODO(redo this? maybe?)
+            notificationBody.put(KeyFields.chatRoomName, chatRoomName)
+            notificationBody.put(KeyFields.deviceId, CurrentUser.getInstance().deviceId)
+            //notificationBody.put(KeyFields.userImage, BitmapManipulation.toByte())
             notification.put("to", topic)
             notification.put("data", notificationBody)
             Log.e("TAG", "try")
@@ -45,13 +62,8 @@ class SendingNotfication(context: Context)
         val jsonObjectRequest = object : JsonObjectRequest(fcmAPI, notification,
             Response.Listener<JSONObject> { response ->
                 Log.i("TAG", "onResponse: $response")
-
-                //respone?
-
-                //msg.setText("")
             },
             Response.ErrorListener {
-                //Toast.makeText(this@MainActivity, "Request error", Toast.LENGTH_LONG).show()
                 Log.i("TAG", "onErrorResponse: Didn't work")
             }) {
 
@@ -62,8 +74,10 @@ class SendingNotfication(context: Context)
                 return params
             }
         }
+
         requestQueue.add(jsonObjectRequest)
     }
+
 
 
 

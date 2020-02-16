@@ -17,6 +17,7 @@ import com.syhler.android.messagingapp.data.entites.ChatRoom
 import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
 import com.syhler.android.messagingapp.ui.chatroomlist.adapter.ChatRoomListAdapter
 import com.syhler.android.messagingapp.utillities.Dependencies
+import com.syhler.android.messagingapp.utillities.KeyFields
 import com.syhler.android.messagingapp.viewmodels.ChatRoomListViewModel
 
 
@@ -76,7 +77,9 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
         val intent = Intent(this, ChatRoomActivity::class.java)
         if (chatRooms.size > position)
         {
-            intent.putExtra("key", chatRooms[position].key) //TODO(create a class that hold all intent values)
+            val chatRoom = chatRooms[position]
+            intent.putExtra(KeyFields.chatRoomKey, chatRoom.key) //TODO(create a class that hold all intent values)
+            intent.putExtra(KeyFields.chatRoomName, chatRoom.name)
         }
         startActivity(intent)
     }

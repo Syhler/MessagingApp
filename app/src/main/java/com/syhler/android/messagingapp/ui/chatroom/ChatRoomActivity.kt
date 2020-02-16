@@ -16,10 +16,11 @@ import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
 import com.syhler.android.messagingapp.data.entites.User
-import com.syhler.android.messagingapp.notification.SendingNotfication
+import com.syhler.android.messagingapp.notification.SendingNotification
 import com.syhler.android.messagingapp.ui.chatroom.adapter.MessageAdapter
 import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.Dependencies
+import com.syhler.android.messagingapp.utillities.KeyFields
 import com.syhler.android.messagingapp.viewmodels.ChatRoomViewModel
 
 
@@ -32,18 +33,22 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var viewModel : ChatRoomViewModel
     private lateinit var messageAdapter: MessageAdapter
     private var chatRoomKey: String? = ""
+    private var chatRoomName : String? = ""
 
-    private var notification = SendingNotfication(this)
+    private var notification = SendingNotification(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_room)
 
-        chatRoomKey = intent.getStringExtra("key")
+        chatRoomKey = intent.getStringExtra(KeyFields.chatRoomKey)
+
+        chatRoomName = intent.getStringExtra(KeyFields.chatRoomName)
         if (chatRoomKey != null)
         {
             viewModel = createViewModel(chatRoomKey!!)
             FirebaseMessaging.getInstance().subscribeToTopic(chatRoomKey!!)
+            CurrentUser.getInstance().chatRoomKey = chatRoomKey!!
         }
 
         messageAdapter = MessageAdapter(this)
@@ -153,6 +158,11 @@ class ChatRoomActivity : AppCompatActivity() {
         inputField.text = ""
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        CurrentUser.getInstance().chatRoomKey = ""
+    }
+
     private fun sendMessage(text: String, image : String)
     {
         val currentUser = CurrentUser.getInstance()
@@ -160,9 +170,16 @@ class ChatRoomActivity : AppCompatActivity() {
         val message = Message(text, user, System.currentTimeMillis(), image)
         viewModel.addMessage(message)
         messageAdapter.add(message)
-        notification.sendNotfication(chatRoomKey!!, text)
+        notification.sendNotification(chatRoomKey, message, chatRoomName)
     }
 
+    override fun onPause() {
+        super.onPause()
+        CurrentUser.getInstance().chatRoomKey = ""
+    }
 
-
+    override fun onResume() {
+        super.onResume()
+        CurrentUser.getInstance().chatRoomKey = chatRoomKey!!
+    }
 }

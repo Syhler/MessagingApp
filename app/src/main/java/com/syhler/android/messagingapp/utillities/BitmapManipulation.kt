@@ -52,4 +52,14 @@ object BitmapManipulation
             null
         }
     }
+
+    fun getFromByte(image : String?) : Bitmap?
+    {
+        return try {
+            val encodeByte: ByteArray = Base64.decode(image, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

@@ -2,9 +2,6 @@ package com.syhler.android.messagingapp.ui.chatroom.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +11,7 @@ import android.widget.TextView
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
+import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -108,7 +106,7 @@ class MessageAdapter(context: Context) : BaseAdapter()
 
     private fun setIncomingPicture(imageBinary: String?)
     {
-        val image = getImageAsBitmapFromString(imageBinary)
+        val image = BitmapManipulation.getFromByte(imageBinary)
         if (image != null)
         {
             holder.avatar.setImageBitmap(image)
@@ -117,7 +115,7 @@ class MessageAdapter(context: Context) : BaseAdapter()
 
     private fun displayImage(imageBinary : String)
     {
-        val image = getImageAsBitmapFromString(imageBinary)
+        val image = BitmapManipulation.getFromByte(imageBinary)
         holder.messageBody.visibility = View.GONE
         holder.image.setImageBitmap(image)
     }
@@ -145,15 +143,7 @@ class MessageAdapter(context: Context) : BaseAdapter()
         return messages.size
     }
 
-    private fun getImageAsBitmapFromString(image : String?) : Bitmap?
-    {
-        return try {
-            val encodeByte: ByteArray = Base64.decode(image, Base64.DEFAULT)
-            BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.size)
-        } catch (e: Exception) {
-            null
-        }
-    }
+
 
     class MessageViewHolder
     {

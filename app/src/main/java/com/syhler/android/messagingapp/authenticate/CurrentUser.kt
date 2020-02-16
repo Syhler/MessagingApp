@@ -1,9 +1,13 @@
 package com.syhler.android.messagingapp.authenticate
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.facebook.Profile
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.iid.FirebaseInstanceId
+import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
 import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import kotlinx.coroutines.CoroutineScope
@@ -22,10 +26,12 @@ class CurrentUser
     var chatRoomKey : String = ""
     var authenticationID : String = ""
     var isloggedIn : Boolean = false
+    var deviceId : String = ""
 
     init {
         loadUserData()
         loadProfilePicture()
+        getDeviceId()
     }
 
 
@@ -87,7 +93,7 @@ class CurrentUser
     {
         fullName = user.name
         authenticationMethod = AuthenticationMethod.FACEBOOK
-        photoUrl = user.getProfilePictureUri(100,100).toString()
+        photoUrl = user.linkUri.toString()
         authenticationID = user.id
         isloggedIn = true
     }
@@ -110,6 +116,21 @@ class CurrentUser
                 image = bitmap
             }
         }
+    }
+
+    private fun getDeviceId()
+    {
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    //Log.w(TAG, "getInstanceId failed", task.exception)
+                    return@OnCompleteListener
+                }
+
+                // Get new Instance ID token
+                deviceId = task.result?.token!!
+                //Log.d(TAG, msg)
+            })
     }
 
 

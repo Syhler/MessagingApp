@@ -1,8 +1,7 @@
 package com.syhler.android.messagingapp.notification
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -11,22 +10,54 @@ import android.media.RingtoneManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.syhler.android.messagingapp.R
-import com.syhler.android.messagingapp.ui.MainActivity
-import java.util.*
+import com.syhler.android.messagingapp.authenticate.CurrentUser
+import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
+import com.syhler.android.messagingapp.utillities.KeyFields
+
 
 class NotificationService : FirebaseMessagingService() {
 
     private val NEW_MESSAGE_CHANNEL = "new_message_channel"
 
-    override fun onMessageReceived(p0: RemoteMessage) {
-        super.onMessageReceived(p0)
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
 
-        val intent = Intent(this, MainActivity::class.java)
+        val chatRoomKey = remoteMessage.data[KeyFields.chatRoomKey]
+
+
+
+
+        if (chatRoomKey != null && chatRoomKey == CurrentUser.getInstance().chatRoomKey)
+        {
+            return
+        }
+        /*
+        val currentOpenActivity = getCurrentOpenActiviyName()
+        if (currentOpenActivity == ChatRoomActivity::class.java.name) {
+            return
+        }
+
+         */
+
+
+        val intent = Intent(this, ChatRoomActivity::class.java)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val notificationID = 5 // same id because of multiple chatting
+        val notificationID = 5 // setting a static id because of multiple chatting
+
+        val chatRoomName = remoteMessage.data[KeyFields.chatRoomName]
+        val imageByte = remoteMessage.data[KeyFields.userImage]
+
+        intent.putExtra(KeyFields.chatRoomKey, chatRoomKey)
+        intent.putExtra(KeyFields.chatRoomName, chatRoomName)
+
+
 
         /*
         Apps targeting SDK 26 or above (Android O) must implement notification channels and add its notifications
@@ -47,12 +78,14 @@ class NotificationService : FirebaseMessagingService() {
             R.drawable.bpfull
         )
 
+        //val largeIcon = BitmapManipulation.getFromByte(imageByte)
+
         val notificationSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, NEW_MESSAGE_CHANNEL)
             .setSmallIcon(R.drawable.bpfull)
             .setLargeIcon(largeIcon)
-            .setContentTitle(p0.data.get("title"))
-            .setContentText(p0.data.get("message"))
+            .setContentTitle(remoteMessage.data["title"])
+            .setContentText(remoteMessage.data["message"])
             .setAutoCancel(true)
             .setSound(notificationSoundUri)
             .setContentIntent(pendingIntent)
@@ -78,4 +111,21 @@ class NotificationService : FirebaseMessagingService() {
         adminChannel.enableVibration(true)
         notificationManager?.createNotificationChannel(adminChannel)
     }
+
+    private fun getCurrentOpenActiviyName() : String
+    {
+        val cn: ComponentName
+        val am = applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+
+        cn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            am.appTasks[0].taskInfo.topActivity!!
+        } else {
+            //tbh i dont know if i should include this or no
+            am.getRunningTasks(1)[0].topActivity!! // for systems below lollipop
+        }
+        am
+        return cn.className
+    }
+
+
 }
