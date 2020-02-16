@@ -15,6 +15,8 @@ import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
 import com.syhler.android.messagingapp.data.entites.ChatRoom
 import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
+import com.syhler.android.messagingapp.ui.chatroomlist.adapter.ChatRoomListAdapter
+import com.syhler.android.messagingapp.utillities.Dependencies
 import com.syhler.android.messagingapp.viewmodels.ChatRoomListViewModel
 
 
@@ -31,10 +33,11 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
 
         authenticationHandler = AuthenticationHandler(this, getString(R.string.default_web_client_id))
 
-        viewModel = ViewModelProviders.of(this).get(ChatRoomListViewModel::class.java)
+        viewModel = createViewModel()
 
 
-        chatRoomAdapter = ChatRoomListAdapter(this)
+        chatRoomAdapter =
+            ChatRoomListAdapter(this)
 
         val listView = findViewById<ListView>(R.id.list_chat)
         listView.adapter = chatRoomAdapter
@@ -43,6 +46,13 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
         button.setOnClickListener(this)
 
         initListViewChatRooms(listView)
+    }
+
+    private fun createViewModel() : ChatRoomListViewModel
+    {
+        val factory = Dependencies.provideChatRoomListViewModelFactory()
+        return ViewModelProviders.of(this, factory)
+            .get(ChatRoomListViewModel::class.java)
     }
 
     private fun initListViewChatRooms(listView: ListView)
@@ -77,13 +87,13 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
             AuthenticationMethod.FACEBOOK ->
             {
                 authenticationHandler.facebook.signOut()
-                CurrentUser.initialize() // empties the currentuser data
+                CurrentUser.initialize() // empties the current user data
                 changeToLoginScreen()
 
             }
             AuthenticationMethod.GOOGLE -> {
                 authenticationHandler.google.signOut()?.addOnCompleteListener {
-                    CurrentUser.initialize() // empties the currentuser data
+                    CurrentUser.initialize() // empties the current user data
                     changeToLoginScreen()
                 }
             }

@@ -1,4 +1,4 @@
-package com.syhler.android.messagingapp.ui.chatroomlist
+package com.syhler.android.messagingapp.ui.chatroomlist.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
