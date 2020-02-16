@@ -18,7 +18,7 @@ class CurrentUser
     var fullName : String? = ""
     var image : Bitmap? = null
     lateinit var authenticationMethod: AuthenticationMethod
-    lateinit var photoUrl : String
+    private var photoUrl : String = ""
     var chatRoomKey : String = ""
     var authenticationID : String = ""
     var isloggedIn : Boolean = false
@@ -45,13 +45,8 @@ class CurrentUser
 
         fun initialize()
         {
-            if (instance == null)
-            {
-                instance = CurrentUser()
-            }
+            instance = CurrentUser()
         }
-
-
     }
 
     fun getImageAsByte(): String?

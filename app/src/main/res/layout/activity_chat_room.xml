@@ -6,7 +6,7 @@
               android:orientation="vertical"
               android:clipToPadding="false"
               android:focusableInTouchMode="true"
-              tools:context="com.syhler.android.messagingapp.ui.chatroomlist.chatroom.ChatRoomActivity">
+              tools:context="com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity">
 
     <ListView
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         android:divider="#fff"
         android:stackFromBottom="true"
         android:transcriptMode="alwaysScroll"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
     />
 
     <LinearLayout

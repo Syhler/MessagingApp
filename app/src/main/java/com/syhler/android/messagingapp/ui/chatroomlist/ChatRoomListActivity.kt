@@ -3,6 +3,7 @@ package com.syhler.android.messagingapp.ui.chatroomlist
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -11,8 +12,6 @@ import com.syhler.android.messagingapp.ui.MainActivity
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.AuthenticationHandler
 import com.syhler.android.messagingapp.authenticate.CurrentUser
-import com.syhler.android.messagingapp.authenticate.FacebookAuth
-import com.syhler.android.messagingapp.authenticate.GoogleAuth
 import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
 import com.syhler.android.messagingapp.data.entites.ChatRoom
 import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
@@ -28,7 +27,6 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_chat_room_list)
 
         authenticationHandler = AuthenticationHandler(this, getString(R.string.default_web_client_id))
@@ -40,6 +38,9 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
 
         val listView = findViewById<ListView>(R.id.list_chat)
         listView.adapter = chatRoomAdapter
+
+        val button = findViewById<Button>(R.id.button_log_out)
+        button.setOnClickListener(this)
 
         initListViewChatRooms(listView)
     }
@@ -76,11 +77,13 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
             AuthenticationMethod.FACEBOOK ->
             {
                 authenticationHandler.facebook.signOut()
+                CurrentUser.initialize() // empties the currentuser data
                 changeToLoginScreen()
 
             }
             AuthenticationMethod.GOOGLE -> {
                 authenticationHandler.google.signOut()?.addOnCompleteListener {
+                    CurrentUser.initialize() // empties the currentuser data
                     changeToLoginScreen()
                 }
             }
