@@ -2,6 +2,7 @@ package com.syhler.android.messagingapp.data.repos
 
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 
 class ChatRoomListRepository
@@ -18,9 +19,9 @@ class ChatRoomListRepository
         return database.collection(CHATROOM_PREFIX)
     }
 
-    fun getMessage(chatRoomId : String) : CollectionReference
+    fun getLatestMessageSingular(chatRoomId : String) : Query
     {
-        return database.collection("$CHATROOM_PREFIX/$chatRoomId/messages")
+        return database.collection("$CHATROOM_PREFIX/$chatRoomId/messages").orderBy("timespan").limitToLast(1)
     }
 }
 

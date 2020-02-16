@@ -79,7 +79,6 @@ class MainActivity : AppCompatActivity()
                 override fun onError(error: FacebookException?) {
                     showToast("Couldn't login to facebook. ")
                 }
-
             })
     }
 

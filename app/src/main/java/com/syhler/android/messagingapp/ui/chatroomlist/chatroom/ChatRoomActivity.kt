@@ -35,9 +35,6 @@ class ChatRoomActivity : AppCompatActivity() {
         val chatRoomKey = intent.getStringExtra("key")
         if (chatRoomKey != null)
         {
-            val factory = Dependencies.provideChatRoomViewModelFactory(chatRoomKey)
-            viewModel = ViewModelProviders.of(this, factory)
-                .get(ChatRoomViewModel::class.java)
         }
 
 
@@ -50,6 +47,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
         observeIncomingMessages()
 
+        //Sets button actions
         findViewById<ImageButton>(R.id.message_send_button).setOnClickListener { onMessageSend() }
         findViewById<ImageButton>(R.id.message_attach_button).setOnClickListener { onAttachUse() }
 
@@ -64,6 +62,13 @@ class ChatRoomActivity : AppCompatActivity() {
                 onImagePick(data)
             }
         }
+    }
+
+    private fun createViewModel(chatRoomKey : String) : ChatRoomViewModel
+    {
+        val factory = Dependencies.provideChatRoomViewModelFactory(chatRoomKey)
+        return ViewModelProviders.of(this, factory)
+            .get(ChatRoomViewModel::class.java)
     }
 
     private fun initListViewMessages()

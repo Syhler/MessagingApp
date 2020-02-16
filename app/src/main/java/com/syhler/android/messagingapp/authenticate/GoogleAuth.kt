@@ -19,7 +19,7 @@ class GoogleAuth(private val context: Context?, id : String)
 {
 
 
-    val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val googleSignInClient: GoogleSignInClient
     private val RC_SIGN_IN : Int = 101
 

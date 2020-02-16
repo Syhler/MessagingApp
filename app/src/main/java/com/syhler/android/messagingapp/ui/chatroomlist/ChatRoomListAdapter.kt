@@ -9,11 +9,19 @@ import android.widget.TextView
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.data.entites.ChatRoom
 
-class ChatRoomListAdapter(context: Context, val chatRooms: List<ChatRoom>) : BaseAdapter()
+class ChatRoomListAdapter(context: Context) : BaseAdapter()
 {
 
     private val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     private lateinit var row : View
+    private val chatRooms : MutableList<ChatRoom> = mutableListOf()
+
+
+    fun addAll(value : List<ChatRoom>)
+    {
+        chatRooms.addAll(value)
+        notifyDataSetChanged()
+    }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View
     {

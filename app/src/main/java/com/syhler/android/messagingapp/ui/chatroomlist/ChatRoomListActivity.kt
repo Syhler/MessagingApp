@@ -1,7 +1,6 @@
 package com.syhler.android.messagingapp.ui.chatroomlist
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import android.widget.BaseAdapter
@@ -15,11 +14,9 @@ import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.authenticate.FacebookAuth
 import com.syhler.android.messagingapp.authenticate.GoogleAuth
 import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
+import com.syhler.android.messagingapp.data.entites.ChatRoom
 import com.syhler.android.messagingapp.ui.chatroomlist.chatroom.ChatRoomActivity
 import com.syhler.android.messagingapp.viewmodels.ChatRoomListViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 
 class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
@@ -28,47 +25,56 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
     private val facebookAuth: FacebookAuth = FacebookAuth()
     private var currentUser : CurrentUser = CurrentUser()
 
+    private lateinit var viewModel : ChatRoomListViewModel
+    private lateinit var chatRoomAdapter : ChatRoomListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_chat_room_list)
 
+        //TODO(COMBINE google auth and facebook auth into one class for simplier use)
         googleAuth = GoogleAuth(this, getString(R.string.default_web_client_id))
 
-        val chatRoomListViewModel = ViewModelProviders.of(this)
-            .get(ChatRoomListViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(ChatRoomListViewModel::class.java)
 
 
-        //take a look at this later TODO(LOOOK)
-        chatRoomListViewModel.getChatRooms().observe(this, Observer {
+        val chatRoomAdapter = ChatRoomListAdapter(this)
 
-            val chatRoomAdapter = ChatRoomListAdapter(this, it)
-            val listView = findViewById<ListView>(R.id.list_chat)
-            listView.adapter = chatRoomAdapter
+        val listView = findViewById<ListView>(R.id.list_chat)
+        listView.adapter = chatRoomAdapter
 
-            (listView.adapter as BaseAdapter).notifyDataSetChanged()
+        viewModel.getChatRooms().observe(this, Observer { chatRooms ->
 
+            chatRoomAdapter.addAll(chatRooms)
 
-            listView.setOnItemClickListener{adapterView, view, position: Int, id: Long ->
+            listView.setOnItemClickListener{ _, _, position: Int, _: Long ->
                 run {
-
-                    val intent = Intent(this, ChatRoomActivity::class.java)
-                    if (it.size > position)
-                    {
-                        intent.putExtra("key", it[position].key)
-                    }
-                    startActivity(intent)
+                    changeActivityToChatRoom(chatRooms,position)
                 }
             }
 
         })
 
+        //take a look at this later TODO(LOOOK)
 
-        //button_log_out.setOnClickListener(this)
 
     }
 
+    private fun initListViewChatRooms()
+    {
+
+    }
+
+    private fun changeActivityToChatRoom(chatRooms : List<ChatRoom>, position : Int)
+    {
+        val intent = Intent(this, ChatRoomActivity::class.java)
+        if (chatRooms.size > position)
+        {
+            intent.putExtra("key", chatRooms[position].key) //TODO(create a class that hold all intent values)
+        }
+        startActivity(intent)
+    }
 
     private fun signOut() {
         when(currentUser.authenticationMethod)
