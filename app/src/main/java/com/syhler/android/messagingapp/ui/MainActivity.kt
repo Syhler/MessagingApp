@@ -6,13 +6,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
-import com.facebook.Profile
 import com.facebook.login.LoginResult
-import com.google.firebase.auth.FirebaseAuth
 import com.syhler.android.messagingapp.R
+import com.syhler.android.messagingapp.authenticate.AuthenticationHandler
 import com.syhler.android.messagingapp.authenticate.CurrentUser
-import com.syhler.android.messagingapp.authenticate.FacebookAuth
-import com.syhler.android.messagingapp.authenticate.GoogleAuth
 import com.syhler.android.messagingapp.data.Database
 import com.syhler.android.messagingapp.ui.chatroomlist.ChatRoomListActivity
 import kotlinx.android.synthetic.main.main_activity.*
@@ -21,13 +18,12 @@ import kotlinx.android.synthetic.main.main_activity.*
 class MainActivity : AppCompatActivity()
 {
 
-    private lateinit var googleAuth: GoogleAuth
-    private val facebookAuth = FacebookAuth()
+    private lateinit var authenticationHandler : AuthenticationHandler
 
     override fun onStart() {
         super.onStart()
-        if (FirebaseAuth.getInstance().currentUser != null || Profile.getCurrentProfile() != null)
-        {
+
+        if (CurrentUser.getInstance().isloggedIn) {
             changeScene()
         }
     }
@@ -35,69 +31,60 @@ class MainActivity : AppCompatActivity()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //FacebookSdk.sdkInitialize(applicationContext)
-
         setContentView(R.layout.main_activity)
-        if (savedInstanceState == null)
-        {
-            supportFragmentManager.beginTransaction().commitNow()
-        }
+
 
         Database.getInstance().setupPredefinedChatRooms()
 
+        authenticationHandler = AuthenticationHandler(this, getString(R.string.default_web_client_id))
+
         setupFacebookLogin()
 
-        setupGoogleLogin()
+        button_google_login.setOnClickListener { authenticationHandler.google.onSignInClicked(this) }
 
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         signInGoogle(requestCode, data)
-        facebookAuth.callbackManager.onActivityResult(requestCode, resultCode, data)
+        authenticationHandler.facebook.callbackManager.onActivityResult(requestCode, resultCode, data)
 
     }
 
     private fun setupFacebookLogin()
     {
         button_facebook_login.setPermissions("email", "public_profile")
-        button_facebook_login.registerCallback(facebookAuth.callbackManager,
-            object : FacebookCallback<LoginResult> {
-                override fun onSuccess(result: LoginResult?) {
-                    if (result != null) {
-                        facebookAuth.handleFacebookAccessToken(result.accessToken).addOnCompleteListener {
-                            CurrentUser.getInstance() //instantiate current user
-                            showToast("Login succeeded")
-                            changeScene()
-                        }
-                    }
-                }
-
-                override fun onCancel() {
-                    showToast("Facebook login in cancel")
-                }
-
-                override fun onError(error: FacebookException?) {
-                    showToast("Couldn't login to facebook. ")
-                }
-            })
+        button_facebook_login.registerCallback(authenticationHandler.facebook.callbackManager, createFacebookCallback())
     }
 
-    private fun setupGoogleLogin()
+    private fun createFacebookCallback() : FacebookCallback<LoginResult>
     {
-        //Google
-        googleAuth = GoogleAuth(this, getString(R.string.default_web_client_id))
+        return object:FacebookCallback<LoginResult> {
+            override fun onSuccess(result: LoginResult?) {
+                if (result != null) {
+                    authenticationHandler.facebook.handleFacebookAccessToken(result.accessToken).addOnCompleteListener {
+                        CurrentUser.initialize() //instantiate current user
+                        showToast("Login succeeded")
+                        changeScene()
+                    }
+                }
+            }
+            override fun onCancel() {
+                showToast("Facebook login is cancel")
+            }
 
-        button_google_login.setOnClickListener { googleAuth.signIn(this) }
+            override fun onError(error: FacebookException?) {
+                showToast("Couldn't login to facebook. ")
+            }
+        }
     }
 
     private fun signInGoogle(requestCode: Int, data: Intent?)
     {
         //make a null check
-        googleAuth.signInGoogle(requestCode, data)?.addOnCompleteListener(this) { task ->
+        authenticationHandler.google.signInGoogle(requestCode, data)?.addOnCompleteListener(this) { task ->
         if (task.isSuccessful) {
-            // Sign in success, update UI with the signed-in user's information
-            CurrentUser.getInstance() //instantiate current user
+            CurrentUser.initialize() //instantiate current user
             changeScene()
             showToast("Login succeeded")
         } else {

@@ -15,7 +15,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
-class GoogleAuth(private val context: Context?, id : String)
+class GoogleAuth(private val context: Context?, requestIdToken : String)
 {
 
 
@@ -24,9 +24,8 @@ class GoogleAuth(private val context: Context?, id : String)
     private val RC_SIGN_IN : Int = 101
 
     init {
-        //349551150180-i7ta2bvvl2l1a3m1ntvikrm5j4o427m4.apps.googleusercontent.com
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(id)
+            .requestIdToken(requestIdToken)
             .requestEmail()
             .build()
 
@@ -37,7 +36,7 @@ class GoogleAuth(private val context: Context?, id : String)
 
     }
 
-    fun signIn(activity : Activity?)
+    fun onSignInClicked(activity : Activity?)
     {
         googleSignInClient.signInIntent.also {
             if (activity != null) {

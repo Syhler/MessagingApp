@@ -21,6 +21,7 @@ class CurrentUser
     lateinit var photoUrl : String
     var chatRoomKey : String = ""
     var authenticationID : String = ""
+    var isloggedIn : Boolean = false
 
     init {
         loadUserData()
@@ -42,7 +43,24 @@ class CurrentUser
             }
         }
 
+        fun initialize()
+        {
+            if (instance == null)
+            {
+                instance = CurrentUser()
+            }
+        }
 
+
+    }
+
+    fun getImageAsByte(): String?
+    {
+        if (image != null)
+        {
+            return BitmapManipulation.toByte(image!!)
+        }
+        return ""
     }
 
     private fun loadUserData()
@@ -67,6 +85,7 @@ class CurrentUser
         authenticationMethod = AuthenticationMethod.GOOGLE
         photoUrl = user.photoUrl.toString()
         authenticationID = user.uid
+        isloggedIn = true
     }
 
     private fun setupFacebookUser(user : Profile)
@@ -75,10 +94,11 @@ class CurrentUser
         authenticationMethod = AuthenticationMethod.FACEBOOK
         photoUrl = user.getProfilePictureUri(100,100).toString()
         authenticationID = user.id
+        isloggedIn = true
     }
 
     //save it to disk and only load from internet if picture not already found in db
-    fun loadProfilePicture()
+    private fun loadProfilePicture()
     {
         if (image == null)
         {
@@ -97,14 +117,7 @@ class CurrentUser
         }
     }
 
-    fun getImageAsByte(): String?
-    {
-        if (image != null)
-        {
-            return BitmapManipulation.toByte(image!!)
-        }
-        return ""
-    }
+
 
 
 }
