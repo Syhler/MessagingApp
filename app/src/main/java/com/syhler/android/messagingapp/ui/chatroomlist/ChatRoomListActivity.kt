@@ -3,12 +3,11 @@ package com.syhler.android.messagingapp.ui.chatroomlist
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.BaseAdapter
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.syhler.android.messagingapp.MainActivity
+import com.syhler.android.messagingapp.ui.MainActivity
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.authenticate.FacebookAuth

@@ -1,4 +1,4 @@
-package com.syhler.android.messagingapp.ui.chatroomlist.chatroom
+package com.syhler.android.messagingapp.ui.chatroom
 
 import android.content.Intent
 import android.database.Cursor
@@ -15,7 +15,7 @@ import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
 import com.syhler.android.messagingapp.data.entites.User
-import com.syhler.android.messagingapp.ui.chatroomlist.chatroom.adapter.MessageAdapter
+import com.syhler.android.messagingapp.ui.chatroom.adapter.MessageAdapter
 import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.Dependencies
 import com.syhler.android.messagingapp.viewmodels.ChatRoomViewModel
@@ -35,6 +35,7 @@ class ChatRoomActivity : AppCompatActivity() {
         val chatRoomKey = intent.getStringExtra("key")
         if (chatRoomKey != null)
         {
+            viewModel = createViewModel(chatRoomKey)
         }
 
 

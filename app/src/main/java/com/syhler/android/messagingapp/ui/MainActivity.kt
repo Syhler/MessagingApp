@@ -1,4 +1,4 @@
-package com.syhler.android.messagingapp
+package com.syhler.android.messagingapp.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,7 @@ import com.facebook.FacebookException
 import com.facebook.Profile
 import com.facebook.login.LoginResult
 import com.google.firebase.auth.FirebaseAuth
+import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.authenticate.FacebookAuth
 import com.syhler.android.messagingapp.authenticate.GoogleAuth

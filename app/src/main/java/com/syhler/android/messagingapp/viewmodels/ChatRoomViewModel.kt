@@ -5,11 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.syhler.android.messagingapp.data.entites.Message
 import com.syhler.android.messagingapp.data.repos.MessageRepository
-import java.sql.Timestamp
-import java.util.*
+import com.syhler.android.messagingapp.utillities.DateManipulation
 
 class ChatRoomViewModel(private val messageRepository: MessageRepository) : ViewModel()
 {
@@ -22,15 +22,13 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
     {
         messageRepository.getInitMessages(20).get().addOnSuccessListener {
             val messagesList : MutableList<Message> = mutableListOf()
-            it.documents.forEach { doc ->
-                val tempMessage = doc.toObject(Message::class.java)
-                if (tempMessage != null)
-                {
-                    tempMessage.date = convertTimespanToDate(tempMessage.timespan)
-                    messagesList.add(tempMessage)
-                }
+
+            for (doc in it) {
+                messagesList.add(createMessageFromDoc(doc))
             }
+
             messages.value = messagesList
+
         }.addOnCompleteListener {
             getLatestMessages(messages.value?.get(messages.value!!.size -1)?.timespan!!)
         }
@@ -41,17 +39,13 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
     private fun getLatestMessages(fromTimeStamp: Long)
     {
         messageRepository.getLatestMessage(fromTimeStamp).addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
-            if (e != null)
-            {
+            if (e != null) {
                 Log.w(TAG, "EventListener failed",e)
                 return@EventListener
             }
             var message : Message? = null
-            for (doc in value!!)
-            {
-                val tempMessage = doc.toObject(Message::class.java)
-                tempMessage.date = convertTimespanToDate(tempMessage.timespan)
-                message = tempMessage
+            for (doc in value!!) {
+                message = createMessageFromDoc(doc)
             }
             latestMessage.value = message
         })
@@ -62,17 +56,16 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
 
     }
 
-
     fun addMessage(message: Message)
     {
         messageRepository.addMessage(message)
     }
 
-    private fun convertTimespanToDate(timestamp: Long) : Date
+    private fun createMessageFromDoc(doc : QueryDocumentSnapshot) : Message
     {
-        val ts = Timestamp(timestamp)
-        return Date(ts.time)
+        val tempMessage = doc.toObject(Message::class.java)
+        tempMessage.date = DateManipulation.convertTimespanToDate(tempMessage.timespan)
+        return tempMessage
     }
-
 
 }

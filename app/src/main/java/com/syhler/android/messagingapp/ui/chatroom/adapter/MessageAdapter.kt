@@ -1,4 +1,4 @@
-package com.syhler.android.messagingapp.ui.chatroomlist.chatroom.adapter
+package com.syhler.android.messagingapp.ui.chatroom.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
