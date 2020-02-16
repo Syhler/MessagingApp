@@ -11,10 +11,12 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.firebase.messaging.FirebaseMessaging
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
 import com.syhler.android.messagingapp.data.entites.User
+import com.syhler.android.messagingapp.notification.SendingNotfication
 import com.syhler.android.messagingapp.ui.chatroom.adapter.MessageAdapter
 import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.Dependencies
@@ -24,20 +26,25 @@ import com.syhler.android.messagingapp.viewmodels.ChatRoomViewModel
 class ChatRoomActivity : AppCompatActivity() {
 
 
+    //TODO(null check viewmodel)
+
     private val GALLERY_REQUEST_CODE: Int = 1
     private lateinit var viewModel : ChatRoomViewModel
     private lateinit var messageAdapter: MessageAdapter
+    private var chatRoomKey: String? = ""
+
+    private var notification = SendingNotfication(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_room)
 
-        val chatRoomKey = intent.getStringExtra("key")
+        chatRoomKey = intent.getStringExtra("key")
         if (chatRoomKey != null)
         {
-            viewModel = createViewModel(chatRoomKey)
+            viewModel = createViewModel(chatRoomKey!!)
+            FirebaseMessaging.getInstance().subscribeToTopic(chatRoomKey!!)
         }
-
 
         messageAdapter = MessageAdapter(this)
 
@@ -153,6 +160,7 @@ class ChatRoomActivity : AppCompatActivity() {
         val message = Message(text, user, System.currentTimeMillis(), image)
         viewModel.addMessage(message)
         messageAdapter.add(message)
+        notification.sendNotfication(chatRoomKey!!, text)
     }
 
 
