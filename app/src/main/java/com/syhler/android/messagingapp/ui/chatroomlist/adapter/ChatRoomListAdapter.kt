@@ -19,6 +19,7 @@ class ChatRoomListAdapter(context: Context) : BaseAdapter()
 
     fun addAll(value : List<ChatRoom>)
     {
+        chatRooms.clear()
         chatRooms.addAll(value)
         notifyDataSetChanged()
     }

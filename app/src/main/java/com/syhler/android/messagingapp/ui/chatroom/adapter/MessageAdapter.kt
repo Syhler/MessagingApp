@@ -41,15 +41,6 @@ class MessageAdapter(context: Context) : BaseAdapter()
     }
 
 
-
-    fun addAllAtStart(message : List<Message>)
-    {
-        messages.addAll(0, message)
-        notifyDataSetChanged()
-    }
-
-
-
     @SuppressLint("SetTextI18n")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View
     {

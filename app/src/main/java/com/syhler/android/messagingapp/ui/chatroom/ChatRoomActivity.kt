@@ -1,23 +1,18 @@
 package com.syhler.android.messagingapp.ui.chatroom
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
-import android.os.Parcelable
 import android.provider.MediaStore
 import android.view.KeyEvent
-import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.google.android.gms.tasks.Tasks
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
@@ -28,6 +23,7 @@ import com.syhler.android.messagingapp.ui.dialogs.AskForNotificationDialog
 import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.Dependencies
 import com.syhler.android.messagingapp.utillities.KeyFields
+import com.syhler.android.messagingapp.utillities.ListViewHelper
 import com.syhler.android.messagingapp.viewmodels.ChatRoomViewModel
 
 
@@ -60,10 +56,11 @@ class ChatRoomActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_room)
 
+
         chatRoomKey = intent.getStringExtra(KeyFields.chatRoomKey)
 
         chatRoomName = intent.getStringExtra(KeyFields.chatRoomName)
-
+        title = chatRoomName
 
         if (chatRoomKey != null) {
             viewModel = createViewModel(chatRoomKey!!)
@@ -76,8 +73,8 @@ class ChatRoomActivity : AppCompatActivity() {
         inputField = findViewById(R.id.message_input_field)
         listView = findViewById(R.id.messages_view)
         listView.adapter = messageAdapter
-        val listViewHeader = (applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.chat_room_listview_header, null, false)
-        animationListViewHeader = listViewHeader.findViewById(R.id.chat_room_header_progress_loader)
+        val listViewHeader = ListViewHelper.getLoadingHeader(this)
+        animationListViewHeader = ListViewHelper.getLoadingHeaderProgressBar(listViewHeader)
         listView.addHeaderView(listViewHeader)
 
 
@@ -123,21 +120,15 @@ class ChatRoomActivity : AppCompatActivity() {
                 {
                     if (listView.childCount > 0)
                     {
-                        val lView: View = listView.getChildAt(0)
-                        val offset = lView.top
-                        if (animationListViewHeader.visibility == View.VISIBLE && viewModel.loadedAllMessages)
-                        {
+                        if (animationListViewHeader.visibility == View.VISIBLE && viewModel.loadedAllMessages) {
                             animationListViewHeader.visibility = View.GONE
                         }
-
-                        if (offset == 0 && !viewModel.loadedAllMessages && animationListViewHeader.visibility != View.VISIBLE)
+                        if (ListViewHelper.isTopReached(listView) &&
+                            !viewModel.loadedAllMessages && animationListViewHeader.visibility != View.VISIBLE)
                         {
                             //gets called if we reach top
-
                             animationListViewHeader.visibility = View.VISIBLE
                             viewModel.getPreviousMessages()
-
-
                         }
                     }
                 }
@@ -270,7 +261,6 @@ class ChatRoomActivity : AppCompatActivity() {
             val message = Message(inputField.text.toString(), user, System.currentTimeMillis(), image)
             inputField.setText("")
             viewModel.addMessage(message)
-            listView.post { listView.setSelection(0) }
             messageAdapter.add(message)
             notification.sendNotification(chatRoomKey, message, chatRoomName)
         }

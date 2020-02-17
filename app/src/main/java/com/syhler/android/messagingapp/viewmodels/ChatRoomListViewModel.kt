@@ -20,6 +20,12 @@ class ChatRoomListViewModel(private val repository: ChatRoomListRepository) : Vi
 
     fun getChatRooms() : LiveData<List<ChatRoom>>
     {
+        updateChatRooms()
+        return chatRooms
+    }
+
+    fun updateChatRooms()
+    {
         val tempChatRooms = mutableListOf<ChatRoom>()
 
         repository.getChatRooms().get().addOnSuccessListener {
@@ -33,8 +39,6 @@ class ChatRoomListViewModel(private val repository: ChatRoomListRepository) : Vi
 
             getLatestMessage(tempChatRooms)
         }
-
-        return chatRooms
     }
 
     private fun getLatestMessage(chatRooms: MutableList<ChatRoom>)
