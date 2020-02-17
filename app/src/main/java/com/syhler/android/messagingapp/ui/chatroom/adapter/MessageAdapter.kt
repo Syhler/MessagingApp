@@ -25,7 +25,7 @@ class MessageAdapter(context: Context) : BaseAdapter()
 
     private var messages : MutableList<Message> = arrayListOf()
 
-    fun init(message : List<Message>) : Int
+    fun updateMessages(message : List<Message>) : Int
     {
         val countBeforeAdd = messages.size
         messages.clear()

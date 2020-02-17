@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
@@ -16,8 +17,8 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
     private var TAG = "CHATROOM_VIEWMODEL"
 
     private var messages : MutableLiveData<List<Message>> = MutableLiveData()
+    var loadedAllMessages : Boolean = false
     var latestMessage : MutableLiveData<Message?> = MutableLiveData()
-    var testo : MutableLiveData<Message> = MutableLiveData()
 
     fun getInitMessages() : LiveData<List<Message>>
     {
@@ -37,14 +38,13 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
         return messages
     }
 
-    private fun getFirstMessage() : Message?
-    {
-        return messages.value?.get(0)
-    }
 
-    fun getMessagesFrom()
+    fun getPreviousMessages()
     {
         messageRepository.getMessageFrom(getFirstMessage()?.timespan!!, 50).get().addOnSuccessListener {
+            loadedAllMessages = it.isEmpty || it.size() < 50
+
+
             val newMessages = mutableListOf<Message>()
             for (doc in it)
             {
@@ -62,6 +62,12 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
     fun addMessage(message: Message)
     {
         messageRepository.addMessage(message)
+    }
+
+
+    private fun getFirstMessage() : Message?
+    {
+        return messages.value?.get(0)
     }
 
     private fun getLatestMessages(fromTimeStamp: Long)

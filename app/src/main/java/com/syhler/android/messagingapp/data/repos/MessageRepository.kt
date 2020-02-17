@@ -32,7 +32,7 @@ class MessageRepository(chatRoomKey : String)
         return database.collection(messageCollectionPath)
             .orderBy("timespan")
             .whereLessThan("timespan", fromTimeStamp)
-            .limit(limit)
+            .limitToLast(limit)
     }
 
     fun addMessage(message: Message)
