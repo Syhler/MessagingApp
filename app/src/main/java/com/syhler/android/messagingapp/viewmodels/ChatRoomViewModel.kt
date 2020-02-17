@@ -11,6 +11,10 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.syhler.android.messagingapp.data.entites.Message
 import com.syhler.android.messagingapp.data.repos.MessageRepository
 import com.syhler.android.messagingapp.utillities.DateManipulation
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class ChatRoomViewModel(private val messageRepository: MessageRepository) : ViewModel()
 {
@@ -39,9 +43,8 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
     }
 
 
-    fun getPreviousMessages()
-    {
-        messageRepository.getMessageFrom(getFirstMessage()?.timespan!!, 50).get().addOnSuccessListener {
+    fun loadPreviousMessages(): Task<QuerySnapshot> {
+        return messageRepository.getMessageFrom(getFirstMessage()?.timespan!!, 50).get().addOnSuccessListener {
             loadedAllMessages = it.isEmpty || it.size() < 50
 
 

@@ -39,20 +39,11 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
 
         viewModel = createViewModel()
 
-        val pullToRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.pullToRefresh)
-        pullToRefreshLayout.setOnRefreshListener {
-            if (viewModel != null) {
-                viewModel!!.updateChatRooms()
-            }
-            pullToRefreshLayout.isRefreshing = false
-        }
-
-
         authenticationHandler = AuthenticationHandler(this, getString(R.string.default_web_client_id))
 
-
-
         chatRoomAdapter = ChatRoomListAdapter(this)
+
+        pullDownToRefresh()
 
         val listView = findViewById<ListView>(R.id.list_chat)
         listView.adapter = chatRoomAdapter
@@ -86,10 +77,19 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
                     changeActivityToChatRoom(chatRooms,position)
                 }
             }
-
         })
     }
 
+    private fun pullDownToRefresh()
+    {
+        val pullToRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.pullToRefresh)
+        pullToRefreshLayout.setOnRefreshListener {
+            if (viewModel != null) {
+                viewModel!!.updateChatRooms()
+            }
+            pullToRefreshLayout.isRefreshing = false
+        }
+    }
 
     private fun changeActivityToChatRoom(chatRooms : List<ChatRoom>, position : Int)
     {

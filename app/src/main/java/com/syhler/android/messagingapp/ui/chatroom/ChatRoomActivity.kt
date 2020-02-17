@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
@@ -47,7 +48,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private var chatRoomName : String? = ""
     private lateinit var inputField : EditText
 
-    private lateinit var animationListViewHeader : ProgressBar
+    //private lateinit var animationListViewHeader : ProgressBar
     private lateinit var listView : ListView
 
     private var notification = SendingNotification(this)
@@ -73,9 +74,9 @@ class ChatRoomActivity : AppCompatActivity() {
         inputField = findViewById(R.id.message_input_field)
         listView = findViewById(R.id.messages_view)
         listView.adapter = messageAdapter
-        val listViewHeader = ListViewHelper.getLoadingHeader(this)
-        animationListViewHeader = ListViewHelper.getLoadingHeaderProgressBar(listViewHeader)
-        listView.addHeaderView(listViewHeader)
+        //val listViewHeader = ListViewHelper.getLoadingHeader(this)
+        //animationListViewHeader = ListViewHelper.getLoadingHeaderProgressBar(listViewHeader)
+        //listView.addHeaderView(listViewHeader)
 
 
 
@@ -85,7 +86,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
         setKeyboardListener()
 
-        setScrollListener()
+        pullDownToRefresh()
 
         //Sets button actions
         findViewById<ImageButton>(R.id.message_send_button).setOnClickListener { sendMessage("") }
@@ -106,36 +107,23 @@ class ChatRoomActivity : AppCompatActivity() {
         }
     }
 
-    private fun setScrollListener()
+
+    private fun pullDownToRefresh()
     {
-        listView.setOnScrollListener(object : AbsListView.OnScrollListener {
-            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int)
+        val pullToRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.pullToRefresh)
+        pullToRefreshLayout.setOnRefreshListener {
+            if (!viewModel.loadedAllMessages)
             {
-                // TODO Auto-generated method stub
-            }
-
-            override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int)
-            {
-                if (firstVisibleItem == 0)
-                {
-                    if (listView.childCount > 0)
-                    {
-                        if (animationListViewHeader.visibility == View.VISIBLE && viewModel.loadedAllMessages) {
-                            animationListViewHeader.visibility = View.GONE
-                        }
-                        if (ListViewHelper.isTopReached(listView) &&
-                            !viewModel.loadedAllMessages && animationListViewHeader.visibility != View.VISIBLE)
-                        {
-                            //gets called if we reach top
-                            animationListViewHeader.visibility = View.VISIBLE
-                            viewModel.getPreviousMessages()
-                        }
-                    }
+                viewModel.loadPreviousMessages().addOnSuccessListener {
+                    pullToRefreshLayout.isRefreshing = false
                 }
+            }else
+            {
+                pullToRefreshLayout.isRefreshing = false
             }
-        })
-    }
 
+        }
+    }
 
     private fun openNotificationDialog()
     {
@@ -169,7 +157,6 @@ class ChatRoomActivity : AppCompatActivity() {
                     val top = lView.top
                     listView.setSelectionFromTop(currentIndexInUpdatedListView, top)
                 }
-                animationListViewHeader.visibility = View.GONE
             }
         })
     }
