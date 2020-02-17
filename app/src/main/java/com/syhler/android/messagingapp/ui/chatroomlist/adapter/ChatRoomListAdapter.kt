@@ -37,7 +37,7 @@ class ChatRoomListAdapter(context: Context) : BaseAdapter()
         title.text = chatRoom.name
         if (chatRoom.messages.size > 0)
         {
-            description.text = chatRoom.description + " " + chatRoom.messages[0].text
+            description.text = chatRoom.description
 
         }
         else{

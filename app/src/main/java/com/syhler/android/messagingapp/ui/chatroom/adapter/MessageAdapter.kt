@@ -23,17 +23,28 @@ class MessageAdapter(context: Context) : BaseAdapter()
 
     private var holder = MessageViewHolder()
 
-    private val messages : MutableList<Message> = arrayListOf()
+    private var messages : MutableList<Message> = arrayListOf()
 
-    fun addAll(message : List<Message>)
+    fun init(message : List<Message>) : Int
     {
+        val countBeforeAdd = messages.size
+        messages.clear()
         messages.addAll(message)
         notifyDataSetChanged()
+        return countBeforeAdd
     }
 
     fun add(message: Message)
     {
         messages.add(message)
+        notifyDataSetChanged()
+    }
+
+
+
+    fun addAllAtStart(message : List<Message>)
+    {
+        messages.addAll(0, message)
         notifyDataSetChanged()
     }
 

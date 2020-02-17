@@ -4,14 +4,17 @@ import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.provider.MediaStore
 import android.view.KeyEvent
+import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.AbsListView
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ListView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.size
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.syhler.android.messagingapp.R
@@ -47,6 +50,8 @@ class ChatRoomActivity : AppCompatActivity() {
     private var chatRoomName : String? = ""
     private lateinit var inputField : EditText
 
+    private var listViewState : Parcelable? = null
+
     private var notification = SendingNotification(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,11 +75,24 @@ class ChatRoomActivity : AppCompatActivity() {
         val listView = findViewById<ListView>(R.id.messages_view)
         listView.adapter = messageAdapter
 
-        initListViewMessages()
+
+        initListViewMessages(listView)
 
         observeIncomingMessages()
 
-        setKeyboardListner()
+        setKeyboardListener()
+
+        scrollListener(listView)
+
+        /*
+        viewModel.testo.observe(this, Observer {
+            messageAdapter.addAllAtStart(it)
+            if (listViewState != null) {
+                listView.onRestoreInstanceState(listViewState)
+            }
+        })
+
+         */
 
         //Sets button actions
         findViewById<ImageButton>(R.id.message_send_button).setOnClickListener { sendMessage("") }
@@ -92,6 +110,52 @@ class ChatRoomActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun scrollListener(listView: ListView)
+    {
+        listView.setOnScrollListener(object : AbsListView.OnScrollListener {
+            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int)
+            {
+
+                // TODO Auto-generated method stub
+            }
+
+            override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int)
+            {
+                if (firstVisibleItem == 0)
+                {
+                    if (listView.childCount > 0)
+                    {
+                        val v: View = listView.getChildAt(0)
+                        val offset = v.top
+                        if (offset == 0)
+                        {
+                            // reached the top:
+                            //Load more messages
+
+                            viewModel.getMessagesFrom()
+                            listViewState = listView.onSaveInstanceState()
+                            /*
+                            val firstMessage = viewModel.getFirstMessage()
+                            if (firstMessage != null)
+                            {
+
+                            }
+                            else{
+                                Toast.makeText(this@ChatRoomActivity, "Couldn't get latest message", Toast.LENGTH_LONG).show()
+                            }
+
+                             */
+
+                            return
+                        }
+                    }
+
+                }
+            }
+        })
+    }
+
 
     private fun openNotificationDialog()
     {
@@ -111,12 +175,24 @@ class ChatRoomActivity : AppCompatActivity() {
             .get(ChatRoomViewModel::class.java)
     }
 
-    private fun initListViewMessages()
+    private fun initListViewMessages(listView: ListView)
     {
         viewModel.getInitMessages().observe(this, Observer { messages ->
             if (messages != null)
             {
-                messageAdapter.addAll(messages)
+                val count = messageAdapter.init(messages)
+
+                if (listView.childCount > 0)
+                {
+                    val index: Int = listView.firstVisiblePosition + (messages.size-count)
+
+                    val v: View = listView.getChildAt(0)
+                    val top = v.top //this changed
+
+                    listView.setSelectionFromTop(index, top)
+                }
+
+
             }
         })
     }
@@ -175,7 +251,7 @@ class ChatRoomActivity : AppCompatActivity() {
         startActivityForResult(intent, GALLERY_REQUEST_CODE)
     }
 
-    private fun setKeyboardListner()
+    private fun setKeyboardListener()
     {
         inputField.setOnEditorActionListener { textView, actionId, keyEvent ->
 
@@ -202,10 +278,12 @@ class ChatRoomActivity : AppCompatActivity() {
 
         if (!inputField.text.toString().isBlank() && image.isBlank())
         {
+
             val currentUser = CurrentUser.getInstance()
             val user = MessageUser(currentUser.getImageAsByte(), currentUser.fullName!!, currentUser.authenticationID)
             val message = Message(inputField.text.toString(), user, System.currentTimeMillis(), image)
             inputField.setText("")
+
             viewModel.addMessage(message)
             messageAdapter.add(message)
             notification.sendNotification(chatRoomKey, message, chatRoomName)

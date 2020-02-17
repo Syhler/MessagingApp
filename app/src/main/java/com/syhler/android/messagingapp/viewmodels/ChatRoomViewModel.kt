@@ -17,6 +17,7 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
 
     private var messages : MutableLiveData<List<Message>> = MutableLiveData()
     var latestMessage : MutableLiveData<Message?> = MutableLiveData()
+    var testo : MutableLiveData<Message> = MutableLiveData()
 
     fun getInitMessages() : LiveData<List<Message>>
     {
@@ -36,6 +37,33 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
         return messages
     }
 
+    private fun getFirstMessage() : Message?
+    {
+        return messages.value?.get(0)
+    }
+
+    fun getMessagesFrom()
+    {
+        messageRepository.getMessageFrom(getFirstMessage()?.timespan!!, 50).get().addOnSuccessListener {
+            val newMessages = mutableListOf<Message>()
+            for (doc in it)
+            {
+                newMessages.add(createMessageFromDoc(doc))
+            }
+
+            newMessages.addAll(messages.value!!)
+            if (newMessages.count() != messages.value?.count())
+            {
+                messages.value = newMessages
+            }
+        }
+    }
+
+    fun addMessage(message: Message)
+    {
+        messageRepository.addMessage(message)
+    }
+
     private fun getLatestMessages(fromTimeStamp: Long)
     {
         messageRepository.getLatestMessage(fromTimeStamp).addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
@@ -49,16 +77,6 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
             }
             latestMessage.value = message
         })
-    }
-
-    fun getMessagesFrom()
-    {
-
-    }
-
-    fun addMessage(message: Message)
-    {
-        messageRepository.addMessage(message)
     }
 
     private fun createMessageFromDoc(doc : QueryDocumentSnapshot) : Message

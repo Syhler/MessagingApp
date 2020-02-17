@@ -27,11 +27,11 @@ class MessageRepository(chatRoomKey : String)
             .limitToLast(1)
     }
 
-    fun getMessageFrom(latestMessage : Long, limit : Long) : Query
+    fun getMessageFrom(fromTimeStamp : Long, limit : Long) : Query
     {
         return database.collection(messageCollectionPath)
             .orderBy("timespan")
-            .whereGreaterThan("timespan", latestMessage)
+            .whereLessThan("timespan", fromTimeStamp)
             .limit(limit)
     }
 
