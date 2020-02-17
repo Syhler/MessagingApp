@@ -5,6 +5,9 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.TextView
@@ -42,7 +45,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var messageAdapter: MessageAdapter
     private var chatRoomKey: String? = ""
     private var chatRoomName : String? = ""
-
+    private lateinit var inputField : EditText
 
     private var notification = SendingNotification(this)
 
@@ -63,6 +66,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
         messageAdapter = MessageAdapter(this)
 
+        inputField = findViewById(R.id.message_input_field)
         val listView = findViewById<ListView>(R.id.messages_view)
         listView.adapter = messageAdapter
 
@@ -70,8 +74,10 @@ class ChatRoomActivity : AppCompatActivity() {
 
         observeIncomingMessages()
 
+        setKeyboardListner()
+
         //Sets button actions
-        findViewById<ImageButton>(R.id.message_send_button).setOnClickListener { onMessageSend() }
+        findViewById<ImageButton>(R.id.message_send_button).setOnClickListener { sendMessage("") }
         findViewById<ImageButton>(R.id.message_attach_button).setOnClickListener { onAttachUse() }
 
     }
@@ -138,8 +144,8 @@ class ChatRoomActivity : AppCompatActivity() {
             var bitmap = BitmapManipulation.fromPath(path)
             bitmap = BitmapManipulation.getResized(bitmap, 420)!!
 
-            sendMessage("", BitmapManipulation.toByte(bitmap))
-        }
+            sendMessage(BitmapManipulation.toByte(bitmap))
+    }
     }
 
     private fun getSelectedImagePath(selectedImage : Uri) : String
@@ -169,16 +175,20 @@ class ChatRoomActivity : AppCompatActivity() {
         startActivityForResult(intent, GALLERY_REQUEST_CODE)
     }
 
-    private fun onMessageSend()
+    private fun setKeyboardListner()
     {
-        if (!TempNotificationClass.hasOpenedDialog) openNotificationDialog()
+        inputField.setOnEditorActionListener { textView, actionId, keyEvent ->
 
-        val inputField = findViewById<TextView>(R.id.message_input_field)
-        if (!inputField.text.toString().isBlank())
-        {
-            sendMessage(inputField.text.toString(), "")
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                keyEvent.action == KeyEvent.ACTION_DOWN ||
+                keyEvent.action == KeyEvent.KEYCODE_ENTER)
+            {
+                sendMessage("")
+                return@setOnEditorActionListener true
+            }
+
+            return@setOnEditorActionListener false
         }
-        inputField.text = ""
     }
 
     override fun onBackPressed() {
@@ -186,14 +196,21 @@ class ChatRoomActivity : AppCompatActivity() {
         CurrentUser.getInstance().chatRoomKey = ""
     }
 
-    private fun sendMessage(text: String, image : String)
+    private fun sendMessage(image : String)
     {
-        val currentUser = CurrentUser.getInstance()
-        val user = MessageUser(currentUser.getImageAsByte(), currentUser.fullName!!, currentUser.authenticationID)
-        val message = Message(text, user, System.currentTimeMillis(), image)
-        viewModel.addMessage(message)
-        messageAdapter.add(message)
-        notification.sendNotification(chatRoomKey, message, chatRoomName)
+        if (!TempNotificationClass.hasOpenedDialog) openNotificationDialog()
+
+        if (!inputField.text.toString().isBlank() && image.isBlank())
+        {
+            val currentUser = CurrentUser.getInstance()
+            val user = MessageUser(currentUser.getImageAsByte(), currentUser.fullName!!, currentUser.authenticationID)
+            val message = Message(inputField.text.toString(), user, System.currentTimeMillis(), image)
+            inputField.setText("")
+            viewModel.addMessage(message)
+            messageAdapter.add(message)
+            notification.sendNotification(chatRoomKey, message, chatRoomName)
+        }
+
     }
 
     override fun onPause() {
