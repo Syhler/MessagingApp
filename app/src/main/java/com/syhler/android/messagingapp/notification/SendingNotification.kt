@@ -6,10 +6,8 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import com.google.firebase.iid.FirebaseInstanceId
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
-import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.KeyFields
 import org.json.JSONException
 import org.json.JSONObject
@@ -40,7 +38,7 @@ class SendingNotification(context: Context)
         val notificationBody = JSONObject()
 
         try {
-            notificationBody.put("title", "New message from ${message.user.fullName} : $chatRoomName")
+            notificationBody.put("title", "New message from ${message.messageUser.fullName} : $chatRoomName")
             notificationBody.put("message", message.text)
             notificationBody.put(KeyFields.chatRoomKey, chatRoomKey) //TODO(redo this? maybe?)
             notificationBody.put(KeyFields.chatRoomName, chatRoomName)

@@ -9,7 +9,7 @@ import java.util.*
 @IgnoreExtraProperties
 data class Message(
     var text: String,
-    val user: User,
+    val messageUser: MessageUser,
     val timespan: Long,
     var image : String)
 {
@@ -17,11 +17,11 @@ data class Message(
 
     @set:Exclude @get:Exclude var date : Date = Date()
 
-    constructor() : this("", User(),0L, "")
+    constructor() : this("", MessageUser(),0L, "")
 
     fun isBelongToCurrentUser(currentUser: CurrentUser) : Boolean
     {
-        return currentUser.authenticationID == user.userAuthID
+        return currentUser.authenticationID == messageUser.userAuthID
     }
 
 

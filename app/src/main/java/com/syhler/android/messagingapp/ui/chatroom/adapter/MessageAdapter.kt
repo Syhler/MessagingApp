@@ -67,8 +67,8 @@ class MessageAdapter(context: Context) : BaseAdapter()
 
             view.tag = holder
 
-            holder.name.text = message.user.fullName +" - " + getTimeNow(message.date)
-            setIncomingPicture(message.user.image)
+            holder.name.text = message.messageUser.fullName +" - " + getTimeNow(message.date)
+            setIncomingPicture(message.messageUser.image)
 
             if (messageContainsImage(message.image))
             {

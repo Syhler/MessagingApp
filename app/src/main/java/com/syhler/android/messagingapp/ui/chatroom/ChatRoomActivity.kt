@@ -11,18 +11,26 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.google.firebase.messaging.FirebaseMessaging
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
-import com.syhler.android.messagingapp.data.entites.User
+import com.syhler.android.messagingapp.data.entites.MessageUser
 import com.syhler.android.messagingapp.notification.SendingNotification
 import com.syhler.android.messagingapp.ui.chatroom.adapter.MessageAdapter
+import com.syhler.android.messagingapp.ui.dialogs.AskForNotificationDialog
 import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.Dependencies
 import com.syhler.android.messagingapp.utillities.KeyFields
 import com.syhler.android.messagingapp.viewmodels.ChatRoomViewModel
 
+
+class TempNotificationClass
+{
+    companion object
+    {
+        var hasOpenedDialog = false //TODO(REMOVE WHEN IMPLEMENTED SQLITE)
+    }
+}
 
 class ChatRoomActivity : AppCompatActivity() {
 
@@ -35,6 +43,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private var chatRoomKey: String? = ""
     private var chatRoomName : String? = ""
 
+
     private var notification = SendingNotification(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,10 +53,11 @@ class ChatRoomActivity : AppCompatActivity() {
         chatRoomKey = intent.getStringExtra(KeyFields.chatRoomKey)
 
         chatRoomName = intent.getStringExtra(KeyFields.chatRoomName)
-        if (chatRoomKey != null)
-        {
+
+
+        if (chatRoomKey != null) {
             viewModel = createViewModel(chatRoomKey!!)
-            FirebaseMessaging.getInstance().subscribeToTopic(chatRoomKey!!)
+            //FirebaseMessaging.getInstance().unsubscribeFromTopic(chatRoomKey!!)
             CurrentUser.getInstance().chatRoomKey = chatRoomKey!!
         }
 
@@ -77,6 +87,17 @@ class ChatRoomActivity : AppCompatActivity() {
         }
     }
 
+    private fun openNotificationDialog()
+    {
+        if (chatRoomName != null && chatRoomKey != null)
+        {
+            val notificationDialog = AskForNotificationDialog(chatRoomKey!!)
+            notificationDialog.show(supportFragmentManager, "NotificationDialog")
+            TempNotificationClass.hasOpenedDialog = true
+
+        }
+    }
+
     private fun createViewModel(chatRoomKey : String) : ChatRoomViewModel
     {
         val factory = Dependencies.provideChatRoomViewModelFactory(chatRoomKey)
@@ -99,7 +120,7 @@ class ChatRoomActivity : AppCompatActivity() {
         viewModel.latestMessage.observe(this, Observer {message ->
             if (message != null)
             {
-                if (message.user.userAuthID != CurrentUser.getInstance().authenticationID)
+                if (message.messageUser.userAuthID != CurrentUser.getInstance().authenticationID)
                 {
                     messageAdapter.add(message)
                 }
@@ -150,6 +171,8 @@ class ChatRoomActivity : AppCompatActivity() {
 
     private fun onMessageSend()
     {
+        if (!TempNotificationClass.hasOpenedDialog) openNotificationDialog()
+
         val inputField = findViewById<TextView>(R.id.message_input_field)
         if (!inputField.text.toString().isBlank())
         {
@@ -166,7 +189,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private fun sendMessage(text: String, image : String)
     {
         val currentUser = CurrentUser.getInstance()
-        val user = User(currentUser.getImageAsByte(), currentUser.fullName!!, currentUser.authenticationID)
+        val user = MessageUser(currentUser.getImageAsByte(), currentUser.fullName!!, currentUser.authenticationID)
         val message = Message(text, user, System.currentTimeMillis(), image)
         viewModel.addMessage(message)
         messageAdapter.add(message)

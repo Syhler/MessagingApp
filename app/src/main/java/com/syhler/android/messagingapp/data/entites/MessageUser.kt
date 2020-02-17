@@ -6,7 +6,7 @@ import android.util.Base64
 import com.google.firebase.firestore.Exclude
 
 
-data class User(
+data class MessageUser(
     val image: String?,
     val fullName: String,
     var userAuthID : String)
