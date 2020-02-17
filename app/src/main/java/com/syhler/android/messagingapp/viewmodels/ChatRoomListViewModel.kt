@@ -24,11 +24,10 @@ class ChatRoomListViewModel(private val repository: ChatRoomListRepository) : Vi
         return chatRooms
     }
 
-    fun updateChatRooms()
-    {
+    fun updateChatRooms(): Task<QuerySnapshot> {
         val tempChatRooms = mutableListOf<ChatRoom>()
 
-        repository.getChatRooms().get().addOnSuccessListener {
+        return repository.getChatRooms().get().addOnSuccessListener {
 
             for (doc in it.documents)
             {

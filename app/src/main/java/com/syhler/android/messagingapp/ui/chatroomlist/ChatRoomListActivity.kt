@@ -85,9 +85,10 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
         val pullToRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.pullToRefresh)
         pullToRefreshLayout.setOnRefreshListener {
             if (viewModel != null) {
-                viewModel!!.updateChatRooms()
+                viewModel!!.updateChatRooms().addOnSuccessListener {
+                    pullToRefreshLayout.isRefreshing = false
+                }
             }
-            pullToRefreshLayout.isRefreshing = false
         }
     }
 
