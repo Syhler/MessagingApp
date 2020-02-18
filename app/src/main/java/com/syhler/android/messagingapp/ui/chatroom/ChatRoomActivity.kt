@@ -1,14 +1,15 @@
 package com.syhler.android.messagingapp.ui.chatroom
 
 import android.content.Intent
-import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.*
-import android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ListView
+import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -48,6 +49,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     private lateinit var animationListViewHeader : ProgressBar
     private lateinit var listView : ListView
+    private lateinit var pullToRefresh : SwipeRefreshLayout
 
     private var notification = SendingNotification(this)
 
@@ -110,25 +112,18 @@ class ChatRoomActivity : AppCompatActivity() {
 
     private fun pullDownToRefresh()
     {
-        val pullToRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.pullToRefresh)
-        pullToRefreshLayout.setOnRefreshListener {
+        pullToRefresh = findViewById(R.id.pullToRefresh)
+        pullToRefresh.setOnRefreshListener {
             if (!viewModel.loadedAllMessages)
             {
                 val task = viewModel.loadPreviousMessages()
 
-                if (task != null) {
-                    task.addOnCompleteListener {
-                        pullToRefreshLayout.isRefreshing = false
-                    }
-                }
-                else {
-                    pullToRefreshLayout.isRefreshing = false
+                if (task == null) {
+                    pullToRefresh.isRefreshing = false
                 }
 
-            }
-            else
-            {
-                pullToRefreshLayout.isRefreshing = false
+            } else {
+                pullToRefresh.isRefreshing = false
             }
 
         }
@@ -158,13 +153,16 @@ class ChatRoomActivity : AppCompatActivity() {
             if (messages != null)
             {
                 val countBeforeUpdated = messageAdapter.updateMessages(messages)
-                if (listView.childCount > 0)
+
+                if (listView.childCount > 0 && pullToRefresh.isRefreshing)
                 {
+                    pullToRefresh.isRefreshing = false
                     val currentIndexInUpdatedListView: Int = listView.firstVisiblePosition + (messages.size-countBeforeUpdated)
                     val lView: View = listView.getChildAt(0)
                     val top = lView.top
                     listView.setSelectionFromTop(currentIndexInUpdatedListView, top)
                 }
+
 
                 animationListViewHeader.visibility = View.GONE
             }
@@ -237,7 +235,14 @@ class ChatRoomActivity : AppCompatActivity() {
         viewModel.addMessage(message)
         messageAdapter.add(message)
         notification.sendNotification(chatRoomKey, message, chatRoomName)
+        scrollToBottomOfListView()
+    }
 
+    private fun scrollToBottomOfListView()
+    {
+        listView.post {
+            listView.setSelection(messageAdapter.getCount() - 1)
+        }
     }
 
     override fun onPause() {
