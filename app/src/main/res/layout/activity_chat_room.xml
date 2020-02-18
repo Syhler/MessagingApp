@@ -21,6 +21,7 @@
             android:divider="#fff"
             android:stackFromBottom="true"
             android:transcriptMode="normal"
+            android:overScrollMode="never"
         />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

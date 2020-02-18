@@ -1,5 +1,6 @@
 package com.syhler.android.messagingapp.data.entites
 
+import android.net.Uri
 import com.google.firebase.database.Exclude
 import com.google.firebase.firestore.IgnoreExtraProperties
 import com.syhler.android.messagingapp.authenticate.CurrentUser
@@ -11,7 +12,7 @@ data class Message(
     var text: String,
     val messageUser: MessageUser,
     val timespan: Long,
-    var image : String)
+    var imageUri : String)
 {
 
 

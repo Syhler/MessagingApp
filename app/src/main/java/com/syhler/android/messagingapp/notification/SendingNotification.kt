@@ -46,7 +46,6 @@ class SendingNotification(context: Context)
             //notificationBody.put(KeyFields.userImage, BitmapManipulation.toByte())
             notification.put("to", topic)
             notification.put("data", notificationBody)
-            Log.e("TAG", "try")
         } catch (e: JSONException) {
             Log.e("TAG", "onCreate: " + e.message)
         }
@@ -56,7 +55,6 @@ class SendingNotification(context: Context)
 
 
     private fun sendNotification(notification: JSONObject) {
-        Log.e("TAG", "sendNotification")
         val jsonObjectRequest = object : JsonObjectRequest(fcmAPI, notification,
             Response.Listener<JSONObject> { response ->
                 Log.i("TAG", "onResponse: $response")

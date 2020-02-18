@@ -2,12 +2,15 @@ package com.syhler.android.messagingapp.ui.chatroom.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
+import com.google.firebase.storage.FirebaseStorage
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
@@ -16,7 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MessageAdapter(context: Context) : BaseAdapter()
+class MessageAdapter(private val context: Context) : BaseAdapter()
 {
 
     private val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -44,7 +47,6 @@ class MessageAdapter(context: Context) : BaseAdapter()
     @SuppressLint("SetTextI18n")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View
     {
-        holder = MessageViewHolder()
         val message = messages[position]
         val view : View
 
@@ -54,9 +56,9 @@ class MessageAdapter(context: Context) : BaseAdapter()
 
             view.tag = holder
 
-            if (messageContainsImage(message.image))
+            if (!message.imageUri.isBlank())
             {
-                displayImage(message.image)
+                displayImage(message.imageUri)
             }
             else
             {
@@ -72,21 +74,28 @@ class MessageAdapter(context: Context) : BaseAdapter()
             holder.name.text = message.messageUser.fullName +" - " + getTimeNow(message.date)
             setIncomingPicture(message.messageUser.image)
 
-            if (messageContainsImage(message.image))
-            {
-                displayImage(message.image)
+            if (!message.imageUri.isBlank()) {
+                displayImage(message.imageUri)
             }
-            else
-            {
+            else {
                 holder.messageBody.text = message.text
-
             }
         }
         return view
     }
 
-    private fun messageContainsImage(imageBinary: String)  = !imageBinary.isBlank()
 
+    private fun displayImage(imageUri: String)
+    {
+        try {
+            val ref = FirebaseStorage.getInstance().getReferenceFromUrl(imageUri)
+            Glide.with(context).load(ref).into(holder.image)
+        }catch (e : IllegalArgumentException) {
+            Glide.with(context).load(imageUri).into(holder.image)
+        }
+        holder.messageBody.visibility = View.GONE
+
+    }
 
     private fun setupViewHolderCurrentUser() : View
     {
@@ -115,13 +124,6 @@ class MessageAdapter(context: Context) : BaseAdapter()
         }
     }
 
-    private fun displayImage(imageBinary : String)
-    {
-        val image = BitmapManipulation.getFromByte(imageBinary)
-        holder.messageBody.visibility = View.GONE
-        holder.image.setImageBitmap(image)
-    }
-
     @SuppressLint("SimpleDateFormat")
     private fun getTimeNow(date : Date) : String
     {
@@ -144,8 +146,6 @@ class MessageAdapter(context: Context) : BaseAdapter()
     {
         return messages.size
     }
-
-
 
     class MessageViewHolder
     {

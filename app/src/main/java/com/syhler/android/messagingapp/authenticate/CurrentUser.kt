@@ -31,7 +31,6 @@ class CurrentUser
     init {
         loadUserData()
         loadProfilePicture()
-        getDeviceId()
     }
 
 
@@ -117,23 +116,5 @@ class CurrentUser
             }
         }
     }
-
-    private fun getDeviceId()
-    {
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener(OnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    //Log.w(TAG, "getInstanceId failed", task.exception)
-                    return@OnCompleteListener
-                }
-
-                // Get new Instance ID token
-                deviceId = task.result?.token!!
-                //Log.d(TAG, msg)
-            })
-    }
-
-
-
 
 }

@@ -1,15 +1,14 @@
 package com.syhler.android.messagingapp.ui.chatroom
 
-import android.app.Activity
 import android.content.Intent
-import android.database.Cursor
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.*
+import android.widget.AbsListView.OnScrollListener.SCROLL_STATE_IDLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -21,7 +20,6 @@ import com.syhler.android.messagingapp.data.entites.MessageUser
 import com.syhler.android.messagingapp.notification.SendingNotification
 import com.syhler.android.messagingapp.ui.chatroom.adapter.MessageAdapter
 import com.syhler.android.messagingapp.ui.dialogs.AskForNotificationDialog
-import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.Dependencies
 import com.syhler.android.messagingapp.utillities.KeyFields
 import com.syhler.android.messagingapp.utillities.ListViewHelper
@@ -81,7 +79,7 @@ class ChatRoomActivity : AppCompatActivity() {
         pullDownToRefresh()
 
         //Sets button actions
-        findViewById<ImageButton>(R.id.message_send_button).setOnClickListener { sendMessage("") }
+        findViewById<ImageButton>(R.id.message_send_button).setOnClickListener { sendMessage(Uri.EMPTY) }
         findViewById<ImageButton>(R.id.message_attach_button).setOnClickListener { onAttachUse() }
 
     }
@@ -90,13 +88,13 @@ class ChatRoomActivity : AppCompatActivity() {
     {
         super.onActivityResult(requestCode, resultCode, data)
 
-        when (requestCode) {
-            GALLERY_REQUEST_CODE -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    onImagePick(data)
-                }
-            }
+        if (requestCode == GALLERY_REQUEST_CODE &&
+            resultCode == RESULT_OK &&
+            data != null && data.data != null)
+        {
+            onImagePick(data)
         }
+
     }
 
     private fun setupListView()
@@ -116,10 +114,19 @@ class ChatRoomActivity : AppCompatActivity() {
         pullToRefreshLayout.setOnRefreshListener {
             if (!viewModel.loadedAllMessages)
             {
-                viewModel.loadPreviousMessages().addOnSuccessListener {
+                val task = viewModel.loadPreviousMessages()
+
+                if (task != null) {
+                    task.addOnCompleteListener {
+                        pullToRefreshLayout.isRefreshing = false
+                    }
+                }
+                else {
                     pullToRefreshLayout.isRefreshing = false
                 }
-            }else
+
+            }
+            else
             {
                 pullToRefreshLayout.isRefreshing = false
             }
@@ -140,7 +147,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     private fun createViewModel(chatRoomKey : String) : ChatRoomViewModel
     {
-        val factory = Dependencies.provideChatRoomViewModelFactory(chatRoomKey)
+        val factory = Dependencies.provideChatRoomViewModelFactory(chatRoomKey, contentResolver)
         return ViewModelProviders.of(this, factory)
             .get(ChatRoomViewModel::class.java)
     }
@@ -151,7 +158,6 @@ class ChatRoomActivity : AppCompatActivity() {
             if (messages != null)
             {
                 val countBeforeUpdated = messageAdapter.updateMessages(messages)
-
                 if (listView.childCount > 0)
                 {
                     val currentIndexInUpdatedListView: Int = listView.firstVisiblePosition + (messages.size-countBeforeUpdated)
@@ -159,6 +165,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     val top = lView.top
                     listView.setSelectionFromTop(currentIndexInUpdatedListView, top)
                 }
+
                 animationListViewHeader.visibility = View.GONE
             }
         })
@@ -182,33 +189,13 @@ class ChatRoomActivity : AppCompatActivity() {
         val selectedImage: Uri? = data?.data
         if (selectedImage != null)
         {
-            val path = getSelectedImagePath(selectedImage)
-
-            var bitmap = BitmapManipulation.fromPath(path)
-            bitmap = BitmapManipulation.getResized(bitmap, 420)!!
-
-            sendMessage(BitmapManipulation.toByte(bitmap))
-    }
-    }
-
-    private fun getSelectedImagePath(selectedImage : Uri) : String
-    {
-        val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
-        // Get the cursor
-        val cursor: Cursor? = contentResolver.query(selectedImage, filePathColumn, null, null, null)
-        // Move to first row
-        cursor?.moveToFirst()
-        //Get the column index of MediaStore.Images.Media.DATA
-        val columnIndex: Int = cursor?.getColumnIndex(filePathColumn[0]) ?: 0
-        //Gets the String value in the column
-        val imagePath: String = cursor?.getString(columnIndex)!!
-        cursor.close()
-        return imagePath
+            sendMessage(selectedImage)
+        }
     }
 
     //open gallery
     private fun onAttachUse() {
-        val intent = Intent(Intent.ACTION_PICK)
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
 
         intent.type = "image/*" //Acceptable files
 
@@ -226,7 +213,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 keyEvent.action == KeyEvent.ACTION_DOWN ||
                 keyEvent.action == KeyEvent.KEYCODE_ENTER)
             {
-                sendMessage("")
+                sendMessage(Uri.EMPTY)
                 return@setOnEditorActionListener true
             }
 
@@ -239,21 +226,17 @@ class ChatRoomActivity : AppCompatActivity() {
         CurrentUser.getInstance().chatRoomKey = ""
     }
 
-    private fun sendMessage(image : String)
+    private fun sendMessage(image : Uri)
     {
         if (!TempNotificationClass.hasOpenedDialog) openNotificationDialog()
 
-        if (!inputField.text.toString().isBlank() && image.isBlank())
-        {
-
-            val currentUser = CurrentUser.getInstance()
-            val user = MessageUser(currentUser.getImageAsByte(), currentUser.fullName!!, currentUser.authenticationID)
-            val message = Message(inputField.text.toString(), user, System.currentTimeMillis(), image)
-            inputField.setText("")
-            viewModel.addMessage(message)
-            messageAdapter.add(message)
-            notification.sendNotification(chatRoomKey, message, chatRoomName)
-        }
+        val currentUser = CurrentUser.getInstance()
+        val user = MessageUser(currentUser.getImageAsByte(), currentUser.fullName!!, currentUser.authenticationID) // should change to get image uri
+        val message = Message(inputField.text.toString(), user, System.currentTimeMillis(), image.toString())
+        inputField.setText("")
+        viewModel.addMessage(message)
+        messageAdapter.add(message)
+        notification.sendNotification(chatRoomKey, message, chatRoomName)
 
     }
 
