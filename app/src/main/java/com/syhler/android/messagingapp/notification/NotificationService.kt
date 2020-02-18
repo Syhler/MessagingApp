@@ -29,6 +29,12 @@ class NotificationService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
+        if(!CurrentUser.getInstance().isloggedIn)
+        {
+            return
+        }
+
+
         val chatRoomKey = remoteMessage.data[KeyFields.chatRoomKey]
 
 
@@ -38,13 +44,6 @@ class NotificationService : FirebaseMessagingService() {
         {
             return
         }
-        /*
-        val currentOpenActivity = getCurrentOpenActiviyName()
-        if (currentOpenActivity == ChatRoomActivity::class.java.name) {
-            return
-        }
-
-         */
 
 
         val intent = Intent(this, ChatRoomActivity::class.java)
@@ -94,6 +93,8 @@ class NotificationService : FirebaseMessagingService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             notificationBuilder.color = resources.getColor(R.color.colorPrimary)
         }
+
+
 
         notificationManager.notify(notificationID, notificationBuilder.build())
     }

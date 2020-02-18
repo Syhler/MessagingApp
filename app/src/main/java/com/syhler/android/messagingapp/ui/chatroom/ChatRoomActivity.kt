@@ -48,7 +48,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private var chatRoomName : String? = ""
     private lateinit var inputField : EditText
 
-    //private lateinit var animationListViewHeader : ProgressBar
+    private lateinit var animationListViewHeader : ProgressBar
     private lateinit var listView : ListView
 
     private var notification = SendingNotification(this)
@@ -61,24 +61,16 @@ class ChatRoomActivity : AppCompatActivity() {
         chatRoomKey = intent.getStringExtra(KeyFields.chatRoomKey)
 
         chatRoomName = intent.getStringExtra(KeyFields.chatRoomName)
+
         title = chatRoomName
 
         if (chatRoomKey != null) {
             viewModel = createViewModel(chatRoomKey!!)
-            //FirebaseMessaging.getInstance().unsubscribeFromTopic(chatRoomKey!!)
             CurrentUser.getInstance().chatRoomKey = chatRoomKey!!
         }
-
-        messageAdapter = MessageAdapter(this)
-
         inputField = findViewById(R.id.message_input_field)
-        listView = findViewById(R.id.messages_view)
-        listView.adapter = messageAdapter
-        //val listViewHeader = ListViewHelper.getLoadingHeader(this)
-        //animationListViewHeader = ListViewHelper.getLoadingHeaderProgressBar(listViewHeader)
-        //listView.addHeaderView(listViewHeader)
 
-
+        setupListView()
 
         initListViewMessages()
 
@@ -107,6 +99,16 @@ class ChatRoomActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupListView()
+    {
+        messageAdapter = MessageAdapter(this)
+        listView = findViewById(R.id.messages_view)
+        listView.adapter = messageAdapter
+
+        val listViewHeader = ListViewHelper.getLoadingHeader(this)
+        animationListViewHeader = ListViewHelper.getLoadingHeaderProgressBar(listViewHeader)
+        listView.addHeaderView(listViewHeader)
+    }
 
     private fun pullDownToRefresh()
     {
@@ -157,6 +159,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     val top = lView.top
                     listView.setSelectionFromTop(currentIndexInUpdatedListView, top)
                 }
+                animationListViewHeader.visibility = View.GONE
             }
         })
     }

@@ -32,30 +32,39 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
     private var viewModel : ChatRoomListViewModel? = null
     private lateinit var chatRoomAdapter : ChatRoomListAdapter
     private lateinit var animationListViewHeader : ProgressBar
+    private lateinit var listView : ListView
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_room_list)
 
+        title = "Chat Rooms"
+
         viewModel = createViewModel()
 
         authenticationHandler = AuthenticationHandler(this, getString(R.string.default_web_client_id))
 
-        chatRoomAdapter = ChatRoomListAdapter(this)
-
         pullDownToRefresh()
 
-        val listView = findViewById<ListView>(R.id.list_chat)
+        setupListView()
+
+        findViewById<Button>(R.id.button_log_out).setOnClickListener(this)
+
+        initListViewChatRooms()
+    }
+
+    private fun setupListView()
+    {
+        chatRoomAdapter = ChatRoomListAdapter(this)
+        listView = findViewById(R.id.list_chat)
         listView.adapter = chatRoomAdapter
+
+
         val listHeader = ListViewHelper.getLoadingHeader(this)
         listView.addHeaderView(listHeader)
         animationListViewHeader = ListViewHelper.getLoadingHeaderProgressBar(listHeader)
-
-        val button = findViewById<Button>(R.id.button_log_out)
-        button.setOnClickListener(this)
-
-
-        initListViewChatRooms(listView)
     }
 
     private fun createViewModel() : ChatRoomListViewModel
@@ -65,7 +74,7 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
             .get(ChatRoomListViewModel::class.java)
     }
 
-    private fun initListViewChatRooms(listView: ListView)
+    private fun initListViewChatRooms()
     {
         viewModel?.getChatRooms()?.observe(this, Observer { chatRooms ->
 
