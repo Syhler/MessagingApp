@@ -1,7 +1,6 @@
 package com.syhler.android.messagingapp.notification
 
 import android.app.*
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -10,15 +9,12 @@ import android.media.RingtoneManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ProcessLifecycleOwner
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
+import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.KeyFields
 
 
@@ -29,29 +25,29 @@ class NotificationService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        if(!CurrentUser.getInstance().isloggedIn)
-        {
+        val messageFrom = remoteMessage.data[KeyFields.currentUserAuth]
+
+
+        //makes sure you dont receives your own notifications
+        if(!CurrentUser.getInstance().isloggedIn || CurrentUser.getInstance().authenticationID == messageFrom) {
             return
         }
-
 
         val chatRoomKey = remoteMessage.data[KeyFields.chatRoomKey]
 
-
-
-
-        if (chatRoomKey != null && chatRoomKey == CurrentUser.getInstance().chatRoomKey)
-        {
+        //makes sure you dont receives any messages if you already in the room the messages are comming from
+        if (chatRoomKey != null && chatRoomKey == CurrentUser.getInstance().chatRoomKey) {
             return
         }
+
 
 
         val intent = Intent(this, ChatRoomActivity::class.java)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val notificationID = 5 // setting a static id because of multiple chatting
+
+        val notificationID = 2 // setting a static id because of multiple chatting
 
         val chatRoomName = remoteMessage.data[KeyFields.chatRoomName]
-        val imageByte = remoteMessage.data[KeyFields.userImage]
 
         intent.putExtra(KeyFields.chatRoomKey, chatRoomKey)
         intent.putExtra(KeyFields.chatRoomName, chatRoomName)
@@ -72,22 +68,24 @@ class NotificationService : FirebaseMessagingService() {
             PendingIntent.FLAG_ONE_SHOT
         )
 
+
         val largeIcon = BitmapFactory.decodeResource(
             resources,
-            R.drawable.bpfull
+            R.drawable.baseline_chat_black_24dp
         )
 
-        //val largeIcon = BitmapManipulation.getFromByte(imageByte)
 
         val notificationSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, NEW_MESSAGE_CHANNEL)
-            .setSmallIcon(R.drawable.bpfull)
+            .setSmallIcon(R.drawable.ic_launcher_round)
             .setLargeIcon(largeIcon)
             .setContentTitle(remoteMessage.data["title"])
             .setContentText(remoteMessage.data["message"])
             .setAutoCancel(true)
             .setSound(notificationSoundUri)
             .setContentIntent(pendingIntent)
+
+
 
         //Set notification color to match your app color template
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -101,32 +99,16 @@ class NotificationService : FirebaseMessagingService() {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private fun setupChannels(notificationManager: NotificationManager?) {
-        val adminChannelName = "New notification"
-        val adminChannelDescription = "Device to device notification"
+        val channelName = "New notification"
+        val channelDescription = "Chat room notification"
 
-        val adminChannel: NotificationChannel
-        adminChannel = NotificationChannel(NEW_MESSAGE_CHANNEL, adminChannelName, NotificationManager.IMPORTANCE_HIGH)
-        adminChannel.description = adminChannelDescription
-        adminChannel.enableLights(true)
-        adminChannel.lightColor = Color.RED
-        adminChannel.enableVibration(true)
-        notificationManager?.createNotificationChannel(adminChannel)
+        val channel: NotificationChannel
+        channel = NotificationChannel(NEW_MESSAGE_CHANNEL, channelName, NotificationManager.IMPORTANCE_HIGH)
+        channel.description = channelDescription
+        channel.enableLights(true)
+        channel.lightColor = Color.RED
+        channel.enableVibration(true)
+        notificationManager?.createNotificationChannel(channel)
     }
-
-    private fun getCurrentOpenActiviyName() : String
-    {
-        val cn: ComponentName
-        val am = applicationContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-
-        cn = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            am.appTasks[0].taskInfo.topActivity!!
-        } else {
-            //tbh i dont know if i should include this or no
-            am.getRunningTasks(1)[0].topActivity!! // for systems below lollipop
-        }
-        am
-        return cn.className
-    }
-
 
 }

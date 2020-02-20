@@ -4,13 +4,19 @@ import android.content.Context
 import android.util.Log
 import com.android.volley.RequestQueue
 import com.android.volley.Response
+import com.android.volley.ServerError
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
+import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.KeyFields
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.UnsupportedEncodingException
+
 
 class SendingNotification(context: Context)
 {
@@ -42,12 +48,12 @@ class SendingNotification(context: Context)
             notificationBody.put("message", message.text)
             notificationBody.put(KeyFields.chatRoomKey, chatRoomKey) //TODO(redo this? maybe?)
             notificationBody.put(KeyFields.chatRoomName, chatRoomName)
-            notificationBody.put(KeyFields.deviceId, CurrentUser.getInstance().deviceId)
-            //notificationBody.put(KeyFields.userImage, BitmapManipulation.toByte())
+            notificationBody.put(KeyFields.currentUserAuth, CurrentUser.getInstance().authenticationID)
+
             notification.put("to", topic)
             notification.put("data", notificationBody)
         } catch (e: JSONException) {
-            Log.e("TAG", "onCreate: " + e.message)
+            Log.e(TAG, "onCreate: " + e.message)
         }
 
         sendNotification(notification)
@@ -57,10 +63,10 @@ class SendingNotification(context: Context)
     private fun sendNotification(notification: JSONObject) {
         val jsonObjectRequest = object : JsonObjectRequest(fcmAPI, notification,
             Response.Listener<JSONObject> { response ->
-                Log.i("TAG", "onResponse: $response")
+                Log.i(TAG, "onResponse: $response")
             },
             Response.ErrorListener {
-                Log.i("TAG", "onErrorResponse: Didn't work")
+                Log.e(TAG, "onErrorResponse: Something wnet wrong", it)
             }) {
 
             override fun getHeaders(): Map<String, String> {
@@ -73,6 +79,7 @@ class SendingNotification(context: Context)
 
         requestQueue.add(jsonObjectRequest)
     }
+
 
 
 

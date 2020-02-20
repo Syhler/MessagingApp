@@ -16,8 +16,10 @@ import java.net.URL
 object BitmapManipulation
 {
 
-    fun toByte(image : Bitmap) : String
+    fun toByte(image: Bitmap?) : String
     {
+        if (image == null) return ""
+
         val byteOutStream = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.PNG, 100, byteOutStream)
         val b: ByteArray = byteOutStream.toByteArray()
@@ -44,12 +46,7 @@ object BitmapManipulation
             val options = BitmapFactory.Options()
             // Decode bitmap with inSampleSize set
             options.inJustDecodeBounds = false
-            /*val newBitmap = Bitmap.createScaledBitmap(
-                mBitmap!!, 200, 200,
-                true
-            )
 
-             */
             val file = File(context.filesDir, (System.currentTimeMillis().toString() + ".jpeg"))
 
             val out: FileOutputStream = context.openFileOutput(file.name, Context.MODE_APPEND)
