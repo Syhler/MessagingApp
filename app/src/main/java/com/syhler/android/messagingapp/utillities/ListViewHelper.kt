@@ -19,7 +19,7 @@ object ListViewHelper
 
     fun getLoadingHeader(context: Context) : View
     {
-        return (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.listview_header, null, false)
+        return (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.listview_header_loading, null, false)
     }
 
     fun getLoadingHeaderProgressBar(header : View) : ProgressBar
