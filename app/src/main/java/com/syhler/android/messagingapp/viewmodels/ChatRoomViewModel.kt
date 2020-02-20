@@ -94,23 +94,11 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
         }
     }
 
-    private fun uploadBitmapImage(message: Message)
-    {
-        if (message.cameraPicture != null)
-        {
-            //messageRepository.uploadImage()
-        }
-    }
-
 
     fun addMessage(message: Message)
     {
         if (!message.imageUri.isBlank()) {
             uploadImage(message)
-        }
-        else if (message.cameraPicture != null)
-        {
-
         }
         else{
             messageRepository.addMessage(message)

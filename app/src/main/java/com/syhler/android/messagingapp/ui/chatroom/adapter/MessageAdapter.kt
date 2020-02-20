@@ -94,12 +94,16 @@ class MessageAdapter(private val context: Context) : BaseAdapter()
                 .load(ref)
                 .placeholder(R.drawable.ic_launcher_background)
                 .error(R.drawable.ic_launcher_foreground)
+                .override(500,500)
+                .dontAnimate()
                 .into(holder.image)
         }catch (e : IllegalArgumentException) {
             Glide.with(context)
                 .load(imageUri)
                 .placeholder(R.drawable.ic_launcher_background)
                 .error(R.drawable.ic_launcher_foreground)
+                .override(500,500)
+                .dontAnimate()
                 .into(holder.image)
         }
         holder.messageBody.visibility = View.GONE

@@ -18,7 +18,6 @@ data class Message(
 
 
     @set:Exclude @get:Exclude var date : Date = Date()
-    @set:Exclude @get:Exclude var cameraPicture : Bitmap? = null
 
     constructor() : this("", MessageUser(),0L, "")
 
