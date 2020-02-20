@@ -1,15 +1,18 @@
 package com.syhler.android.messagingapp.ui.chatroom
 
+import android.Manifest
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ListView
-import android.widget.ProgressBar
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -21,6 +24,7 @@ import com.syhler.android.messagingapp.data.entites.MessageUser
 import com.syhler.android.messagingapp.notification.SendingNotification
 import com.syhler.android.messagingapp.ui.chatroom.adapter.MessageAdapter
 import com.syhler.android.messagingapp.ui.dialogs.AskForNotificationDialog
+import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.Dependencies
 import com.syhler.android.messagingapp.utillities.KeyFields
 import com.syhler.android.messagingapp.utillities.ListViewHelper
@@ -40,6 +44,8 @@ class ChatRoomActivity : AppCompatActivity() {
 
     //TODO(null check viewmodel)
 
+    private val CAMERA_REQUEST_CODE: Int = 3
+    private val CAMERA_PERMISSION_CODE: Int = 2
     private val GALLERY_REQUEST_CODE: Int = 1
     private lateinit var viewModel : ChatRoomViewModel
     private lateinit var messageAdapter: MessageAdapter
@@ -83,6 +89,7 @@ class ChatRoomActivity : AppCompatActivity() {
         //Sets button actions
         findViewById<ImageButton>(R.id.message_send_button).setOnClickListener { sendMessage(Uri.EMPTY) }
         findViewById<ImageButton>(R.id.message_attach_button).setOnClickListener { onAttachUse() }
+        findViewById<ImageButton>(R.id.message_camera_button).setOnClickListener { onCameraClick() }
 
     }
 
@@ -90,14 +97,29 @@ class ChatRoomActivity : AppCompatActivity() {
     {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == GALLERY_REQUEST_CODE &&
-            resultCode == RESULT_OK &&
-            data != null && data.data != null)
-        {
+        if (requestCode == GALLERY_REQUEST_CODE && resultCode == RESULT_OK) {
             onImagePick(data)
+        } else if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            onCameraUse(data)
         }
-
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == CAMERA_PERMISSION_CODE)
+        {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show()
+                openCamera()
+            }
+            else {
+                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+
 
     private fun setupListView()
     {
@@ -202,6 +224,41 @@ class ChatRoomActivity : AppCompatActivity() {
 
         startActivityForResult(intent, GALLERY_REQUEST_CODE)
     }
+
+
+    private fun openCamera()
+    {
+        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)
+    }
+
+    private fun onCameraUse(data: Intent?)
+    {
+        if (data == null) return
+
+        val photo = data.extras?.get("data") as Bitmap
+        val uri = BitmapManipulation.toUriConverter(photo, this)
+        if (uri != null) {
+            sendMessage(uri)
+        }
+    }
+
+    private fun onCameraClick()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_CODE)
+            } else {
+                openCamera()
+            }
+        }else
+        {
+            openCamera()
+        }
+
+    }
+
 
     private fun setKeyboardListener()
     {

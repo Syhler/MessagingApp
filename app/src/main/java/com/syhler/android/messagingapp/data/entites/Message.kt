@@ -1,5 +1,6 @@
 package com.syhler.android.messagingapp.data.entites
 
+import android.graphics.Bitmap
 import android.net.Uri
 import com.google.firebase.database.Exclude
 import com.google.firebase.firestore.IgnoreExtraProperties
@@ -17,6 +18,7 @@ data class Message(
 
 
     @set:Exclude @get:Exclude var date : Date = Date()
+    @set:Exclude @get:Exclude var cameraPicture : Bitmap? = null
 
     constructor() : this("", MessageUser(),0L, "")
 

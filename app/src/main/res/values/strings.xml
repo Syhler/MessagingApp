@@ -96,6 +96,7 @@
     <string name="action_settings">Settings</string>
     <string name="log_out">Log out</string>
     <string name="title_activity_chat_room">chatRoomActivity</string>
+    <string name="write_a_message">Write a message</string>
 
 
 </resources>

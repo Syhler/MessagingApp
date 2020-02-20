@@ -27,7 +27,7 @@ class MessageRepository(chatRoomKey : String, private var contentResolver: Conte
             .limitToLast(numberOfMessages)
     }
 
-    fun getLatestMessage(fromTimeStamp: Long): Query
+     fun getLatestMessage(fromTimeStamp: Long): Query
     {
         return database.collection(messageCollectionPath)
             .orderBy("timespan")
@@ -55,6 +55,7 @@ class MessageRepository(chatRoomKey : String, private var contentResolver: Conte
 
         return fileReference.putFile(imageUri)
     }
+
 
     fun addMessage(message: Message)
     {

@@ -10,6 +10,7 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
@@ -89,9 +90,17 @@ class MessageAdapter(private val context: Context) : BaseAdapter()
     {
         try {
             val ref = FirebaseStorage.getInstance().getReferenceFromUrl(imageUri)
-            Glide.with(context).load(ref).into(holder.image)
+            Glide.with(context)
+                .load(ref)
+                .placeholder(R.drawable.ic_launcher_background)
+                .error(R.drawable.ic_launcher_foreground)
+                .into(holder.image)
         }catch (e : IllegalArgumentException) {
-            Glide.with(context).load(imageUri).into(holder.image)
+            Glide.with(context)
+                .load(imageUri)
+                .placeholder(R.drawable.ic_launcher_background)
+                .error(R.drawable.ic_launcher_foreground)
+                .into(holder.image)
         }
         holder.messageBody.visibility = View.GONE
 

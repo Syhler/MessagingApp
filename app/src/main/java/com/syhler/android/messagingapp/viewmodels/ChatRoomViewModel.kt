@@ -24,6 +24,8 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
 {
     private var TAG = "CHATROOM_VIEWMODEL"
 
+    private val startAmountOfMessages = 20
+
     private var messages : MutableLiveData<List<Message>> = MutableLiveData()
     var loadedAllMessages : Boolean = false
     var latestMessage : MutableLiveData<Message?> = MutableLiveData()
@@ -53,6 +55,8 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
     fun loadPreviousMessages(): Task<QuerySnapshot>?
     {
         val firstMessage: Message? = getFirstMessage() ?: return null
+        if (messages.value?.size!! < startAmountOfMessages) return null
+
 
         return messageRepository.getMessageFrom(firstMessage?.timespan!!, 50).get().addOnSuccessListener {
             loadedAllMessages = it.isEmpty || it.size() < 50
@@ -70,6 +74,8 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
                 messages.value = newMessages
             }
         }
+
+
     }
 
     private fun uploadImage(message: Message)
@@ -88,11 +94,23 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
         }
     }
 
+    private fun uploadBitmapImage(message: Message)
+    {
+        if (message.cameraPicture != null)
+        {
+            //messageRepository.uploadImage()
+        }
+    }
+
 
     fun addMessage(message: Message)
     {
         if (!message.imageUri.isBlank()) {
             uploadImage(message)
+        }
+        else if (message.cameraPicture != null)
+        {
+
         }
         else{
             messageRepository.addMessage(message)
@@ -131,15 +149,6 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
         tempMessage.date = DateManipulation.convertTimespanToDate(tempMessage.timespan)
         tempMessage.imageUri
         return tempMessage
-    }
-
-
-    private fun getImage(uri : String)
-    {
-        val imageUri = Uri.parse(uri)
-        val result = messageRepository.getImage(imageUri).result
-
-
     }
 
 }

@@ -1,10 +1,14 @@
 package com.syhler.android.messagingapp.utillities
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.util.Base64
 import android.util.Log
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -34,9 +38,32 @@ object BitmapManipulation
         return Bitmap.createScaledBitmap(image, width, height, true)
     }
 
-    fun fromPath(path : String) : Bitmap
-    {
-        return BitmapFactory.decodeFile(path)
+    fun toUriConverter(mBitmap: Bitmap?, context: Context): Uri? {
+        var uri: Uri? = null
+        try {
+            val options = BitmapFactory.Options()
+            // Decode bitmap with inSampleSize set
+            options.inJustDecodeBounds = false
+            /*val newBitmap = Bitmap.createScaledBitmap(
+                mBitmap!!, 200, 200,
+                true
+            )
+
+             */
+            val file = File(context.filesDir, (System.currentTimeMillis().toString() + ".jpeg"))
+
+            val out: FileOutputStream = context.openFileOutput(file.name, Context.MODE_APPEND)
+            mBitmap?.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            out.flush()
+            out.close()
+            //get absolute path
+            val realPath: String = file.absolutePath
+            val f = File(realPath)
+            uri = Uri.fromFile(f)
+        } catch (e: Exception) {
+            Log.e("Your Error Message", e.message)
+        }
+        return uri
     }
 
     fun getFromURL(src: String?) : Bitmap?
