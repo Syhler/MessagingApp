@@ -20,14 +20,6 @@ class MainActivity : AppCompatActivity()
 
     private lateinit var authenticationHandler : AuthenticationHandler
 
-    override fun onStart() {
-        super.onStart()
-
-        if (CurrentUser.getInstance().isloggedIn) {
-            changeScene()
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -104,14 +96,6 @@ class MainActivity : AppCompatActivity()
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
 
     }
-
-
-
-
-
-
-
-
 
 }
 

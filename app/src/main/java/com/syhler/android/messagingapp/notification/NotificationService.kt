@@ -14,7 +14,6 @@ import com.google.firebase.messaging.RemoteMessage
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
-import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.KeyFields
 
 
