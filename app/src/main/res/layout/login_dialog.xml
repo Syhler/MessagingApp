@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/app_background"
+>
+
+    <ProgressBar
+        android:id="@+id/auth_progress_loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="40dp" android:layout_marginBottom="40dp" android:visibility="visible"/>
+    <TextView
+        android:id="@+id/auth_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginBottom="45dp" android:gravity="center" android:text="Authenticating..."
+        android:textSize="24sp"/>
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:layout_marginTop="40dp" android:layout_weight="1"
+        android:text="Button"
+        android:visibility="gone"/>
+
+
+</LinearLayout>

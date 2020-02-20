@@ -10,8 +10,7 @@ class AskForNotificationDialog(private val chatRoomKey : String) : AppCompatDial
 {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
-        //val chatRoomName = activity?.intent?.getStringExtra(KeyFields.chatRoomName)
-        val alertBuilder = AlertDialog.Builder(activity)
+        val alertBuilder = AlertDialog.Builder(this.activity)
 
         alertBuilder.setTitle("Notification")
             .setMessage("Do you want to enable notification for this room?")

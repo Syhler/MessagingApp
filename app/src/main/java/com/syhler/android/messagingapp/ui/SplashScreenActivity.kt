@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.syhler.android.messagingapp.authenticate.CurrentUser
-import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
 import com.syhler.android.messagingapp.ui.chatroomlist.ChatRoomListActivity
 
 
@@ -19,7 +18,7 @@ class SplashScreenActivity : AppCompatActivity() {
         }
         else
         {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, LoginActivity::class.java))
         }
 
     }

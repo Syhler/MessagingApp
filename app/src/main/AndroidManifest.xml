@@ -17,7 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.LoginActivity"
+        android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
         <service

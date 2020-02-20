@@ -3,7 +3,6 @@ package com.syhler.android.messagingapp.ui.chatroomlist
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.AbsListView
 import android.widget.Button
 import android.widget.ListView
 import android.widget.ProgressBar
@@ -16,7 +15,7 @@ import com.syhler.android.messagingapp.authenticate.AuthenticationHandler
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
 import com.syhler.android.messagingapp.data.entites.ChatRoom
-import com.syhler.android.messagingapp.ui.MainActivity
+import com.syhler.android.messagingapp.ui.LoginActivity
 import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
 import com.syhler.android.messagingapp.ui.chatroomlist.adapter.ChatRoomListAdapter
 import com.syhler.android.messagingapp.utillities.Dependencies
@@ -144,7 +143,7 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
 
     private fun changeToLoginScreen()
     {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
     }
 
