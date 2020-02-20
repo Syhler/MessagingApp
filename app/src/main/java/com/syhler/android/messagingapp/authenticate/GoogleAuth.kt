@@ -15,7 +15,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 
-class GoogleAuth(private val context: Context?, requestIdToken: String, private val dialog: androidx.appcompat.app.AlertDialog)
+class GoogleAuth(private val context: Context?, requestIdToken: String, private val dialog: androidx.appcompat.app.AlertDialog?)
 {
 
 
@@ -55,7 +55,7 @@ class GoogleAuth(private val context: Context?, requestIdToken: String, private 
                 firebaseAuthWithGoogle(account!!)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
-                dialog.dismiss()
+                dialog?.dismiss()
                 Toast.makeText(context, "Google login failed", Toast.LENGTH_LONG).show()
                 null
             }

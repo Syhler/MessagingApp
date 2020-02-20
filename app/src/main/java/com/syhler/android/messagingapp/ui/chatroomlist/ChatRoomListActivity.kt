@@ -43,7 +43,7 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
 
         viewModel = createViewModel()
 
-        authenticationHandler = AuthenticationHandler(this, getString(R.string.default_web_client_id))
+        authenticationHandler = AuthenticationHandler(this, getString(R.string.default_web_client_id), null)
 
         pullDownToRefresh()
 
