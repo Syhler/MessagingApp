@@ -116,6 +116,7 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
             intent.putExtra(KeyFields.chatRoomName, chatRoom.title)
         }
         startActivity(intent)
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
     }
 
     private fun signOut() {

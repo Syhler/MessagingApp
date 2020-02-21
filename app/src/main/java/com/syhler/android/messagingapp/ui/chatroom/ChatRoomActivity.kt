@@ -279,6 +279,7 @@ class ChatRoomActivity : AppCompatActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         CurrentUser.getInstance().chatRoomKey = ""
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
     private fun sendMessage(image : Uri)
