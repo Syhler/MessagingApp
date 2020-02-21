@@ -1,9 +1,9 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@color/colorPrimary"/>
+    <item android:drawable="@android:color/white"/>
 
     <item>
-        <bitmap android:src="@drawable/ic_launcher_round"
+        <bitmap android:src="@drawable/app_icon"
                 android:gravity="center"/>
     </item>
 

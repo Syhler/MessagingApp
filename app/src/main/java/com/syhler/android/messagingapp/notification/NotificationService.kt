@@ -9,12 +9,14 @@ import android.media.RingtoneManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
 import com.syhler.android.messagingapp.utillities.KeyFields
+import java.util.*
 
 
 class NotificationService : FirebaseMessagingService() {
@@ -44,13 +46,12 @@ class NotificationService : FirebaseMessagingService() {
         val intent = Intent(this, ChatRoomActivity::class.java)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val notificationID = 2 // setting a static id because of multiple chatting
+        val notificationID = Random().nextInt(3000)// setting a static id because of multiple chatting
 
         val chatRoomName = remoteMessage.data[KeyFields.chatRoomName]
 
         intent.putExtra(KeyFields.chatRoomKey, chatRoomKey)
         intent.putExtra(KeyFields.chatRoomName, chatRoomName)
-
 
 
         /*
@@ -76,19 +77,27 @@ class NotificationService : FirebaseMessagingService() {
 
         val notificationSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, NEW_MESSAGE_CHANNEL)
-            .setSmallIcon(R.drawable.ic_launcher_round)
+            .setSmallIcon(R.drawable.app_icon_without_text_transparent)
             .setLargeIcon(largeIcon)
             .setContentTitle(remoteMessage.data["title"])
-            .setContentText(remoteMessage.data["message"])
             .setAutoCancel(true)
             .setSound(notificationSoundUri)
             .setContentIntent(pendingIntent)
+
+        if (remoteMessage.data["message"]?.isBlank()!!)
+        {
+            notificationBuilder.setContentText("Sent image")
+        }
+        else
+        {
+            notificationBuilder.setContentText(remoteMessage.data["message"])
+        }
 
 
 
         //Set notification color to match your app color template
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            notificationBuilder.color = resources.getColor(R.color.colorPrimary)
+            notificationBuilder.color = ContextCompat.getColor(this, R.color.colorPrimaryDark)
         }
 
 

@@ -47,11 +47,15 @@ class ChatRoomActivity : AppCompatActivity() {
     private val CAMERA_REQUEST_CODE: Int = 3
     private val CAMERA_PERMISSION_CODE: Int = 2
     private val GALLERY_REQUEST_CODE: Int = 1
-    private lateinit var viewModel : ChatRoomViewModel
-    private lateinit var messageAdapter: MessageAdapter
+
     private var chatRoomKey: String? = ""
     private var chatRoomName : String? = ""
+
+    private lateinit var viewModel : ChatRoomViewModel
+    private lateinit var messageAdapter: MessageAdapter
     private lateinit var inputField : EditText
+    private lateinit var bottomLinearLayout: LinearLayout
+
 
     private lateinit var animationListViewHeader : ProgressBar
     private lateinit var listView : ListView
@@ -75,7 +79,7 @@ class ChatRoomActivity : AppCompatActivity() {
             CurrentUser.getInstance().chatRoomKey = chatRoomKey!!
         }
         inputField = findViewById(R.id.message_input_field)
-
+        bottomLinearLayout = findViewById(R.id.chat_room_bottom_extra)
         setupListView()
 
         initListViewMessages()
@@ -88,8 +92,9 @@ class ChatRoomActivity : AppCompatActivity() {
 
         //Sets button actions
         findViewById<ImageButton>(R.id.message_send_button).setOnClickListener { sendMessage(Uri.EMPTY) }
-        findViewById<ImageButton>(R.id.message_attach_button).setOnClickListener { onAttachUse() }
+        findViewById<ImageButton>(R.id.message_attach_button).setOnClickListener { onAttachClick() }
         findViewById<ImageButton>(R.id.message_camera_button).setOnClickListener { onCameraClick() }
+        findViewById<ImageButton>(R.id.message_add_button).setOnClickListener {onAddClick()}
 
     }
 
@@ -120,6 +125,15 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
 
+    private fun onAddClick()
+    {
+        if (bottomLinearLayout.visibility == View.GONE) {
+            bottomLinearLayout.visibility = View.VISIBLE
+        }
+        else {
+            bottomLinearLayout.visibility = View.GONE
+        }
+    }
 
     private fun setupListView()
     {
@@ -214,14 +228,14 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     //open gallery
-    private fun onAttachUse() {
+    private fun onAttachClick() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
 
         intent.type = "image/*" //Acceptable files
 
         val mimeTypes = arrayOf("image/jpeg", "image/png") //Acceptable files
         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
-
+        bottomLinearLayout.visibility = View.GONE
         startActivityForResult(intent, GALLERY_REQUEST_CODE)
     }
 
@@ -230,6 +244,7 @@ class ChatRoomActivity : AppCompatActivity() {
     {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)
+        bottomLinearLayout.visibility = View.GONE
     }
 
     private fun onCameraUse(data: Intent?)
@@ -294,6 +309,8 @@ class ChatRoomActivity : AppCompatActivity() {
         messageAdapter.add(message)
         notification.sendNotification(chatRoomKey, message, chatRoomName)
         scrollToBottomOfListView()
+        bottomLinearLayout.visibility = View.GONE
+
     }
 
     private fun scrollToBottomOfListView()
