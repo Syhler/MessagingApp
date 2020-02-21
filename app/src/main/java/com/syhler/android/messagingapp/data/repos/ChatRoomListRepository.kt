@@ -19,7 +19,7 @@ class ChatRoomListRepository
         return database.collection(CHATROOM_PREFIX)
     }
 
-    fun getLatestMessageSingular(chatRoomId : String) : Query
+    fun getLatestMessage(chatRoomId : String) : Query
     {
         return database.collection("$CHATROOM_PREFIX/$chatRoomId/messages").orderBy("timespan").limitToLast(1)
     }

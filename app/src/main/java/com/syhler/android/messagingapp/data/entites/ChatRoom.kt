@@ -6,14 +6,15 @@ import java.io.Serializable
 
 
 @IgnoreExtraProperties
-data class ChatRoom(val name : String,
-                    val description : String)
+data class ChatRoom(val title : String,
+                    val description : String,
+                    val image : String)
 {
 
     @set:Exclude @get:Exclude var key : String = ""
     @get:Exclude val messages : MutableList<Message> = arrayListOf()
 
-    constructor() : this("", "")
+    constructor() : this("", "", "")
 
     fun getLatestMessageDate() : Long
     {

@@ -1,16 +1,15 @@
 package com.syhler.android.messagingapp.ui.chatroomlist
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
-import android.widget.ListView
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.AuthenticationHandler
@@ -19,10 +18,9 @@ import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
 import com.syhler.android.messagingapp.data.entites.ChatRoom
 import com.syhler.android.messagingapp.ui.LoginActivity
 import com.syhler.android.messagingapp.ui.chatroom.ChatRoomActivity
-import com.syhler.android.messagingapp.ui.chatroomlist.adapter.ChatRoomListAdapter
+import com.syhler.android.messagingapp.ui.chatroomlist.adapter.ChatRoomListRecyclerAdapter
 import com.syhler.android.messagingapp.utillities.Dependencies
 import com.syhler.android.messagingapp.utillities.KeyFields
-import com.syhler.android.messagingapp.utillities.ListViewHelper
 import com.syhler.android.messagingapp.viewmodels.ChatRoomListViewModel
 
 
@@ -31,9 +29,9 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
     private lateinit var  authenticationHandler : AuthenticationHandler
 
     private var viewModel : ChatRoomListViewModel? = null
-    private lateinit var chatRoomAdapter : ChatRoomListAdapter
-    private lateinit var animationListViewHeader : ProgressBar
-    private lateinit var listView : ListView
+
+    private lateinit var chatRoomAdapter : ChatRoomListRecyclerAdapter
+    private lateinit var recyclerView : RecyclerView
 
 
 
@@ -49,24 +47,37 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
 
         pullDownToRefresh()
 
-        setupListView()
+        setupRecyclerView()
 
         findViewById<Button>(R.id.button_log_out).setOnClickListener(this)
 
         initListViewChatRooms()
     }
 
-    private fun setupListView()
+    private fun setupRecyclerView()
     {
-        chatRoomAdapter = ChatRoomListAdapter(this)
-        listView = findViewById(R.id.list_chat)
-        listView.adapter = chatRoomAdapter
+
+        recyclerView = findViewById(R.id.recycler_chat_rooms)
 
 
-        val listHeader = ListViewHelper.getLoadingHeader(this)
-        listView.addHeaderView(listHeader)
-        animationListViewHeader = ListViewHelper.getLoadingHeaderProgressBar(listHeader)
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(this@ChatRoomListActivity)
+            chatRoomAdapter = ChatRoomListRecyclerAdapter(recyclerViewOnClick())
+            adapter = chatRoomAdapter
+
+        }
     }
+
+    private fun recyclerViewOnClick() : View.OnClickListener
+    {
+        return View.OnClickListener { view ->
+            if (view != null) {
+                val itemPosition = recyclerView.getChildLayoutPosition(view)
+                changeActivityToChatRoom(chatRoomAdapter.chatRooms, itemPosition)
+            }
+        }
+    }
+
 
     private fun createViewModel() : ChatRoomListViewModel
     {
@@ -79,14 +90,7 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
     {
         viewModel?.getChatRooms()?.observe(this, Observer { chatRooms ->
 
-            chatRoomAdapter.addAll(chatRooms)
-            animationListViewHeader.visibility = View.GONE
-
-            listView.setOnItemClickListener{ _, _, position: Int, _: Long ->
-                run {
-                    changeActivityToChatRoom(chatRooms,position)
-                }
-            }
+            chatRoomAdapter.submitList(chatRooms)
         })
     }
 
@@ -105,11 +109,11 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
     private fun changeActivityToChatRoom(chatRooms : List<ChatRoom>, position : Int)
     {
         val intent = Intent(this, ChatRoomActivity::class.java)
-        if (chatRooms.size > position-1) //minus 1 becuase of the header in the listview
+        if (chatRooms.size > position)
         {
-            val chatRoom = chatRooms[position-1]
+            val chatRoom = chatRooms[position]
             intent.putExtra(KeyFields.chatRoomKey, chatRoom.key) //TODO(create a class that hold all intent values)
-            intent.putExtra(KeyFields.chatRoomName, chatRoom.name)
+            intent.putExtra(KeyFields.chatRoomName, chatRoom.title)
         }
         startActivity(intent)
     }

@@ -5,13 +5,14 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="16dp"
+    android:background="?android:attr/selectableItemBackground"
 >
 
     <ImageView
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:src="@mipmap/ic_launcher"
-        android:id="@+id/image"
+        android:id="@+id/chatRoom_row_image"
     />
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,7 +28,7 @@
             android:textStyle="bold"
             android:layout_margin="5dp"
             android:textSize="20sp"
-            android:id="@+id/row_title"
+            android:id="@+id/chatRoom_row_title"
         />
 
         <TextView
@@ -38,7 +39,7 @@
             android:textStyle="bold"
             android:layout_margin="5dp"
             android:textSize="15sp"
-            android:id="@+id/row_description"
+            android:id="@+id/chatRoom_row_description"
         />
         <!--so our layout is set-->
 

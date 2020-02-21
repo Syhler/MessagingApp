@@ -61,7 +61,7 @@ class ChatRoomListViewModel(private val repository: ChatRoomListRepository) : Vi
 
         for (room in chatRooms)
         {
-            val query = repository.getLatestMessageSingular(room.key).get().addOnSuccessListener {
+            val query = repository.getLatestMessage(room.key).get().addOnSuccessListener {
                 if (it.size() > 0)
                 {
                     room.messages.add(createMessageFromDoc(it.documents[0]))
