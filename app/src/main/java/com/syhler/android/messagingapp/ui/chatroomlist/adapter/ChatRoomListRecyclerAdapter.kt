@@ -60,8 +60,6 @@ class ChatRoomListRecyclerAdapter(private val onClickListener: View.OnClickListe
                     .into(image)
             }
 
-
-
             title.text = chatRoom.title
             description.text = chatRoom.description
         }

@@ -12,22 +12,25 @@ import android.provider.MediaStore
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.*
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
 import com.syhler.android.messagingapp.data.entites.MessageUser
 import com.syhler.android.messagingapp.notification.SendingNotification
-import com.syhler.android.messagingapp.ui.chatroom.adapter.MessageAdapter
+import com.syhler.android.messagingapp.ui.chatroom.adapter.MessageRecycleViewAdapter
 import com.syhler.android.messagingapp.ui.dialogs.AskForNotificationDialog
 import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.Dependencies
 import com.syhler.android.messagingapp.utillities.KeyFields
-import com.syhler.android.messagingapp.utillities.ListViewHelper
 import com.syhler.android.messagingapp.viewmodels.ChatRoomViewModel
 
 
@@ -52,13 +55,15 @@ class ChatRoomActivity : AppCompatActivity() {
     private var chatRoomName : String? = ""
 
     private lateinit var viewModel : ChatRoomViewModel
-    private lateinit var messageAdapter: MessageAdapter
     private lateinit var inputField : EditText
     private lateinit var bottomLinearLayout: LinearLayout
 
 
-    private lateinit var animationListViewHeader : ProgressBar
-    private lateinit var listView : ListView
+    //private lateinit var animationListViewHeader : ProgressBar
+    private lateinit var recyclerView : RecyclerView
+    private lateinit var messageAdapter: MessageRecycleViewAdapter
+
+
     private lateinit var pullToRefresh : SwipeRefreshLayout
 
     private var notification = SendingNotification(this)
@@ -80,7 +85,7 @@ class ChatRoomActivity : AppCompatActivity() {
         }
         inputField = findViewById(R.id.message_input_field)
         bottomLinearLayout = findViewById(R.id.chat_room_bottom_extra)
-        setupListView()
+        setupRecyclerView()
 
         initListViewMessages()
 
@@ -135,15 +140,23 @@ class ChatRoomActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupListView()
+    private fun setupRecyclerView()
     {
-        messageAdapter = MessageAdapter(this)
-        listView = findViewById(R.id.messages_view)
-        listView.adapter = messageAdapter
+        recyclerView = findViewById(R.id.messages_view)
 
-        val listViewHeader = ListViewHelper.getLoadingHeader(this)
-        animationListViewHeader = ListViewHelper.getLoadingHeaderProgressBar(listViewHeader)
-        listView.addHeaderView(listViewHeader)
+        recyclerView.apply {
+            //layoutManager = LinearLayoutManager(this@ChatRoomActivity)
+            messageAdapter = MessageRecycleViewAdapter()
+            adapter = messageAdapter
+        }
+
+        //When user open keyboard scroll down to the latest message
+        recyclerView.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            if (bottom < oldBottom) {
+                recyclerView.postDelayed({ recyclerView.smoothScrollToPosition(messageAdapter.itemCount) }, 100)
+            }
+        }
+
     }
 
     private fun pullDownToRefresh()
@@ -188,8 +201,9 @@ class ChatRoomActivity : AppCompatActivity() {
         viewModel.getInitMessages().observe(this, Observer { messages ->
             if (messages != null)
             {
-                val countBeforeUpdated = messageAdapter.updateMessages(messages)
+                val countBeforeUpdated = messageAdapter.submitMessages(messages)
 
+                /*
                 if (listView.childCount > 0 && pullToRefresh.isRefreshing)
                 {
                     pullToRefresh.isRefreshing = false
@@ -199,8 +213,10 @@ class ChatRoomActivity : AppCompatActivity() {
                     listView.setSelectionFromTop(currentIndexInUpdatedListView, top)
                 }
 
+                 */
 
-                animationListViewHeader.visibility = View.GONE
+
+                //animationListViewHeader.visibility = View.GONE
             }
         })
     }
@@ -308,16 +324,7 @@ class ChatRoomActivity : AppCompatActivity() {
         viewModel.addMessage(message)
         messageAdapter.add(message)
         notification.sendNotification(chatRoomKey, message, chatRoomName)
-        scrollToBottomOfListView()
         bottomLinearLayout.visibility = View.GONE
-
-    }
-
-    private fun scrollToBottomOfListView()
-    {
-        listView.post {
-            listView.setSelection(messageAdapter.getCount() - 1)
-        }
     }
 
     override fun onPause() {
