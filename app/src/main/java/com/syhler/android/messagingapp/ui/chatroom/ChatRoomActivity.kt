@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -57,7 +58,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     private lateinit var viewModel : ChatRoomViewModel
     private lateinit var inputField : EditText
-    private lateinit var bottomLinearLayout: LinearLayout
+    private lateinit var activityBar: LinearLayout
 
 
     private lateinit var recyclerView : RecyclerView
@@ -84,7 +85,7 @@ class ChatRoomActivity : AppCompatActivity() {
             CurrentUser.getInstance().chatRoomKey = chatRoomKey!!
         }
         inputField = findViewById(R.id.message_input_field)
-        bottomLinearLayout = findViewById(R.id.chat_room_bottom_extra)
+        activityBar = findViewById(R.id.chat_room_activity_bar)
         setupRecyclerView()
 
         initListViewMessages()
@@ -132,11 +133,11 @@ class ChatRoomActivity : AppCompatActivity() {
 
     private fun onAddClick()
     {
-        if (bottomLinearLayout.visibility == View.GONE) {
-            bottomLinearLayout.visibility = View.VISIBLE
+        if (activityBar.visibility == View.GONE) {
+            activityBar.visibility = View.VISIBLE
         }
         else {
-            bottomLinearLayout.visibility = View.GONE
+            hideActivityBar()
         }
     }
 
@@ -163,7 +164,7 @@ class ChatRoomActivity : AppCompatActivity() {
         pullToRefresh.setOnRefreshListener {
             if (!viewModel.loadedAllMessages)
             {
-                val task = viewModel.loadPreviousMessages()
+                val task = viewModel.loadPreviousMessages(messageAdapter.messages)
 
                 if (task == null) {
                     pullToRefresh.isRefreshing = false
@@ -199,18 +200,11 @@ class ChatRoomActivity : AppCompatActivity() {
         viewModel.getInitMessages().observe(this, Observer { messages ->
             if (messages != null)
             {
-                val countBeforeUpdated = messageAdapter.submitMessages(messages)
+                val messagesBeforeUpdate = messageAdapter.submitMessages(messages)
 
 
-                if (recyclerView.childCount > 0 && pullToRefresh.isRefreshing)
-                {
-                    pullToRefresh.isRefreshing = false
-
-                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-
-                    val currentIndexInUpdatedListView: Int = layoutManager.findFirstVisibleItemPosition() + (messages.size-countBeforeUpdated)
-
-                    layoutManager.scrollToPositionWithOffset(currentIndexInUpdatedListView,0)
+                if (recyclerView.childCount > 0 && pullToRefresh.isRefreshing) {
+                    loadPreviousMessages((messages.size-messagesBeforeUpdate))
                 }
                 else{
                     scrollDownToLatestMessage()
@@ -227,10 +221,30 @@ class ChatRoomActivity : AppCompatActivity() {
             {
                 if (message.messageUser.userAuthID != CurrentUser.getInstance().authenticationID)
                 {
+                    val notificationSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    val sound = RingtoneManager.getRingtone(this, notificationSoundUri)
+                    sound.play()
                     messageAdapter.add(message)
+
+                    if (!recyclerView.canScrollVertically(1))
+                    {
+                       scrollDownToLatestMessage()
+                    }
                 }
             }
         })
+    }
+
+
+    private fun loadPreviousMessages(index: Int)
+    {
+        pullToRefresh.isRefreshing = false
+
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+
+        val currentIndexInUpdatedListView: Int = layoutManager.findFirstVisibleItemPosition() + index
+
+        layoutManager.scrollToPositionWithOffset(currentIndexInUpdatedListView,0)
     }
 
     private fun onMessageClick()
@@ -250,7 +264,9 @@ class ChatRoomActivity : AppCompatActivity() {
         }
     }
 
-    //open gallery
+    /**
+     * Opens gallery
+     */
     private fun onAttachClick() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
 
@@ -258,7 +274,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
         val mimeTypes = arrayOf("image/jpeg", "image/png") //Acceptable files
         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
-        bottomLinearLayout.visibility = View.GONE
+        hideActivityBar()
         startActivityForResult(intent, GALLERY_REQUEST_CODE)
     }
 
@@ -267,7 +283,7 @@ class ChatRoomActivity : AppCompatActivity() {
     {
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE)
-        bottomLinearLayout.visibility = View.GONE
+        hideActivityBar()
     }
 
     private fun onCameraUse(data: Intent?)
@@ -290,8 +306,8 @@ class ChatRoomActivity : AppCompatActivity() {
             } else {
                 openCamera()
             }
-        }else
-        {
+        }
+        else {
             openCamera()
         }
 
@@ -314,11 +330,6 @@ class ChatRoomActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        CurrentUser.getInstance().chatRoomKey = ""
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
-    }
 
     private fun sendMessage(image : Uri)
     {
@@ -332,14 +343,24 @@ class ChatRoomActivity : AppCompatActivity() {
         messageAdapter.add(message)
         notification.sendNotification(chatRoomKey, message, chatRoomName)
         scrollDownToLatestMessage()
-        bottomLinearLayout.visibility = View.GONE
+        hideActivityBar()
 
+    }
+
+    private fun hideActivityBar() {
+        activityBar.visibility = View.GONE
     }
 
     private fun scrollDownToLatestMessage()
     {
-        recyclerView.scrollToPosition(messageAdapter.itemCount-1)
+        recyclerView.postDelayed({recyclerView.scrollToPosition(messageAdapter.itemCount-1)},150)
+    }
 
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        CurrentUser.getInstance().chatRoomKey = ""
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
     override fun onPause() {

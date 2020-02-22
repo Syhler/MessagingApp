@@ -10,7 +10,7 @@ import com.syhler.android.messagingapp.data.entites.Message
 class MessageRecycleViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
 
-    private var messages : MutableList<Message> = arrayListOf()
+    var messages : MutableList<Message> = arrayListOf()
 
     fun submitMessages(value : List<Message>) : Int
     {

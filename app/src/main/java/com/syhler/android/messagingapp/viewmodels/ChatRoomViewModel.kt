@@ -1,20 +1,14 @@
 package com.syhler.android.messagingapp.viewmodels
 
-import android.content.ContentResolver
 import android.net.Uri
 import android.util.Log
-import android.webkit.MimeTypeMap
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.UploadTask
 import com.syhler.android.messagingapp.data.entites.Message
 import com.syhler.android.messagingapp.data.repos.MessageRepository
 import com.syhler.android.messagingapp.utillities.DateManipulation
@@ -24,7 +18,7 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
 {
     private var TAG = "CHATROOM_VIEWMODEL"
 
-    private val startAmountOfMessages = 20
+    private val loadSize = 50
 
     private var messages : MutableLiveData<List<Message>> = MutableLiveData()
     var loadedAllMessages : Boolean = false
@@ -32,7 +26,7 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
 
     fun getInitMessages() : LiveData<List<Message>>
     {
-        messageRepository.getInitMessages(20).get().addOnSuccessListener {
+        messageRepository.getInitMessages(loadSize.toLong()).get().addOnSuccessListener {
             val messagesList : MutableList<Message> = mutableListOf()
 
             for (doc in it) {
@@ -52,14 +46,14 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
     }
 
 
-    fun loadPreviousMessages(): Task<QuerySnapshot>?
+    fun loadPreviousMessages(currentMessage : List<Message>): Task<QuerySnapshot>?
     {
         val firstMessage: Message? = getFirstMessage() ?: return null
-        if (messages.value?.size!! < startAmountOfMessages) return null
+        if (messages.value?.size!! < loadSize) return null
 
 
-        return messageRepository.getMessageFrom(firstMessage?.timespan!!, 50).get().addOnSuccessListener {
-            loadedAllMessages = it.isEmpty || it.size() < 50
+        return messageRepository.getMessageFrom(firstMessage?.timespan!!, loadSize.toLong()).get().addOnSuccessListener {
+            loadedAllMessages = it.isEmpty || it.size() < loadSize
 
 
             val newMessages = mutableListOf<Message>()
@@ -68,8 +62,8 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
                 newMessages.add(createMessageFromDoc(doc))
             }
 
-            newMessages.addAll(messages.value!!)
-            if (newMessages.count() != messages.value?.count())
+            newMessages.addAll(currentMessage)
+            if (newMessages.count() != currentMessage.size)
             {
                 messages.value = newMessages
             }
@@ -77,6 +71,18 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
 
 
     }
+
+    fun addMessage(message: Message)
+    {
+        if (!message.imageUri.isBlank()) {
+            uploadImage(message)
+        }
+        else{
+            messageRepository.addMessage(message)
+        }
+
+    }
+
 
     private fun uploadImage(message: Message)
     {
@@ -89,21 +95,9 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
                     message.imageUri = taskSnapshot?.storage!!.toString()
                     messageRepository.addMessage(message)
                 }.addOnFailureListener {
-                    Log.e(TAG, "something went wrong", it)
+                    Log.e(TAG, "Upload of image threw an exception", it)
                 }
         }
-    }
-
-
-    fun addMessage(message: Message)
-    {
-        if (!message.imageUri.isBlank()) {
-            uploadImage(message)
-        }
-        else{
-            messageRepository.addMessage(message)
-        }
-
     }
 
 

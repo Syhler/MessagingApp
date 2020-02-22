@@ -74,7 +74,7 @@
 
 
         <LinearLayout
-            android:id="@+id/chat_room_bottom_extra"
+            android:id="@+id/chat_room_activity_bar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
