@@ -5,6 +5,7 @@
                 android:paddingVertical="10dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="60dp"
+                android:background="@android:color/transparent"
                 android:clipToPadding="false">
 
 
@@ -50,7 +51,8 @@
         android:layout_marginTop="25dp"
         android:layout_toRightOf="@+id/message_avatar"
         android:adjustViewBounds="true"
-        android:background="@drawable/incoming_message" android:cropToPadding="true"
+        android:background="@drawable/incoming_message"
+        android:cropToPadding="true"
         android:paddingBottom="4dp"
     />
 </RelativeLayout>

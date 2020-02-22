@@ -19,6 +19,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.syhler.android.messagingapp.R
@@ -59,7 +60,6 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var bottomLinearLayout: LinearLayout
 
 
-    //private lateinit var animationListViewHeader : ProgressBar
     private lateinit var recyclerView : RecyclerView
     private lateinit var messageAdapter: MessageRecycleViewAdapter
 
@@ -96,7 +96,7 @@ class ChatRoomActivity : AppCompatActivity() {
         pullDownToRefresh()
 
         //Sets button actions
-        findViewById<ImageButton>(R.id.message_send_button).setOnClickListener { sendMessage(Uri.EMPTY) }
+        findViewById<ImageButton>(R.id.message_send_button).setOnClickListener { onMessageClick() }
         findViewById<ImageButton>(R.id.message_attach_button).setOnClickListener { onAttachClick() }
         findViewById<ImageButton>(R.id.message_camera_button).setOnClickListener { onCameraClick() }
         findViewById<ImageButton>(R.id.message_add_button).setOnClickListener {onAddClick()}
@@ -145,7 +145,6 @@ class ChatRoomActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.messages_view)
 
         recyclerView.apply {
-            //layoutManager = LinearLayoutManager(this@ChatRoomActivity)
             messageAdapter = MessageRecycleViewAdapter()
             adapter = messageAdapter
         }
@@ -153,10 +152,9 @@ class ChatRoomActivity : AppCompatActivity() {
         //When user open keyboard scroll down to the latest message
         recyclerView.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
             if (bottom < oldBottom) {
-                recyclerView.postDelayed({ recyclerView.smoothScrollToPosition(messageAdapter.itemCount) }, 100)
+                recyclerView.postDelayed({ recyclerView.smoothScrollToPosition(messageAdapter.itemCount-1) }, 100)
             }
         }
-
     }
 
     private fun pullDownToRefresh()
@@ -203,20 +201,21 @@ class ChatRoomActivity : AppCompatActivity() {
             {
                 val countBeforeUpdated = messageAdapter.submitMessages(messages)
 
-                /*
-                if (listView.childCount > 0 && pullToRefresh.isRefreshing)
+
+                if (recyclerView.childCount > 0 && pullToRefresh.isRefreshing)
                 {
                     pullToRefresh.isRefreshing = false
-                    val currentIndexInUpdatedListView: Int = listView.firstVisiblePosition + (messages.size-countBeforeUpdated)
-                    val lView: View = listView.getChildAt(0)
-                    val top = lView.top
-                    listView.setSelectionFromTop(currentIndexInUpdatedListView, top)
+
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+
+                    val currentIndexInUpdatedListView: Int = layoutManager.findFirstVisibleItemPosition() + (messages.size-countBeforeUpdated)
+
+                    layoutManager.scrollToPositionWithOffset(currentIndexInUpdatedListView,0)
+                }
+                else{
+                    scrollDownToLatestMessage()
                 }
 
-                 */
-
-
-                //animationListViewHeader.visibility = View.GONE
             }
         })
     }
@@ -232,6 +231,14 @@ class ChatRoomActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun onMessageClick()
+    {
+        if (!inputField.text.isBlank())
+        {
+            sendMessage(Uri.EMPTY)
+        }
     }
 
     private fun onImagePick(data : Intent?)
@@ -299,7 +306,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 keyEvent.action == KeyEvent.ACTION_DOWN ||
                 keyEvent.action == KeyEvent.KEYCODE_ENTER)
             {
-                sendMessage(Uri.EMPTY)
+                onMessageClick()
                 return@setOnEditorActionListener true
             }
 
@@ -324,7 +331,15 @@ class ChatRoomActivity : AppCompatActivity() {
         viewModel.addMessage(message)
         messageAdapter.add(message)
         notification.sendNotification(chatRoomKey, message, chatRoomName)
+        scrollDownToLatestMessage()
         bottomLinearLayout.visibility = View.GONE
+
+    }
+
+    private fun scrollDownToLatestMessage()
+    {
+        recyclerView.scrollToPosition(messageAdapter.itemCount-1)
+
     }
 
     override fun onPause() {
