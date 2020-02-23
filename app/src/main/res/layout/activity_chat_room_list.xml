@@ -8,6 +8,7 @@
     tools:context=".ui.chatroomlist.ChatRoomListActivity"
 >
 
+
 <LinearLayout
               android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -19,13 +20,25 @@
               tools:context=".ui.LoginActivity">
 
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_chat_rooms"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:transcriptMode="normal"
-        />
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@style/ProgressBarTheme"
+        android:layout_gravity="center_horizontal"
+    />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_chat_rooms"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:transcriptMode="normal"
+    />
+
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -46,6 +59,7 @@
             android:scaleType="center" android:text="@string/log_out" android:textSize="14sp"/>
 
     </LinearLayout>
+
 
 
 </LinearLayout>

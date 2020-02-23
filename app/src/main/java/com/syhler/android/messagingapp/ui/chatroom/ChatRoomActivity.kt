@@ -15,10 +15,7 @@ import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -61,6 +58,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private lateinit var viewModel : ChatRoomViewModel
     private lateinit var inputField : EditText
     private lateinit var activityBar: LinearLayout
+    private lateinit var progressBar: ProgressBar
 
 
     private lateinit var recyclerView : RecyclerView
@@ -88,6 +86,8 @@ class ChatRoomActivity : AppCompatActivity() {
         }
         inputField = findViewById(R.id.message_input_field)
         activityBar = findViewById(R.id.chat_room_activity_bar)
+        progressBar = findViewById(R.id.progress_bar)
+
         setupRecyclerView()
 
         initListViewMessages()
@@ -234,6 +234,7 @@ class ChatRoomActivity : AppCompatActivity() {
             if (messages != null)
             {
                 val messagesBeforeUpdate = messageAdapter.submitMessages(messages)
+                progressBar.visibility = View.GONE
 
 
                 if (recyclerView.childCount > 0 && pullToRefresh.isRefreshing) {
@@ -388,7 +389,7 @@ class ChatRoomActivity : AppCompatActivity() {
     {
         if (messageAdapter.itemCount >= 1)
         {
-            recyclerView.postDelayed({recyclerView.scrollToPosition(messageAdapter.itemCount-1)},50)
+            recyclerView.scrollToPosition(messageAdapter.itemCount-1)
         }
     }
 

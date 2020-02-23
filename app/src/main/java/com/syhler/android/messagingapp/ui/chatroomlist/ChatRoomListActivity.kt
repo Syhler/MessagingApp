@@ -32,6 +32,7 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
 
     private lateinit var chatRoomAdapter : ChatRoomListRecyclerAdapter
     private lateinit var recyclerView : RecyclerView
+    private lateinit var progressBar: ProgressBar
 
 
 
@@ -42,6 +43,8 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
         title = "Chat Rooms"
 
         viewModel = createViewModel()
+
+        progressBar = findViewById(R.id.progress_bar)
 
         authenticationHandler = AuthenticationHandler(this, getString(R.string.default_web_client_id), null)
 
@@ -91,6 +94,7 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
         viewModel?.getChatRooms()?.observe(this, Observer { chatRooms ->
 
             chatRoomAdapter.submitList(chatRooms)
+            progressBar.visibility = View.GONE
         })
     }
 
