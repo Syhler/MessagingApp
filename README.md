@@ -1,19 +1,26 @@
 # MessagingApp
 Development Task for House of Code
-
-<h2>Splash screen </h2>
-<h2>Login screen </h2>
-<h4>Facebook </h4>
-<h4>Google </h4>
-<h2>Chat rooms </h2>
-<h2>Send and receive messages</h2>
-<h4>Pull Down to Refresh</h4>
-<h2>Push functionality </h2>
-<h4>Dialog</h4>
-<h4>Push Notification</h4>
-<h2>Upload of images to chat room</h2>
-<h4>Camera</h4>
-<h4>Gallery</h4>
+## Splash screen
+![Splash screen video](https://media.giphy.com/media/hofoF5nN1OgGQJBybM/giphy.gif)
+## Login screen
+#### Facebook
+![Facebook login video](https://media.giphy.com/media/ih5GjuKNSooEegJQ8D/giphy.gif)
+#### Google
+![Google login video](https://media.giphy.com/media/mDSkmePZI4jbPPo7R9/giphy.gif)
+## Chat rooms 
+![Chat room video](https://media.giphy.com/media/j1zW31DqNUSonmdrc5/giphy.gif)
+## Send and receive messages
+![Send and receive video](https://media.giphy.com/media/cik63UgMMvJ9trDfuz/giphy.gif)
+#### Pull Down to Refresh
+![Pull down to refresh video](https://media.giphy.com/media/MB1DALBuxfJ8GtikU3/giphy.gif)
+## Push functionality
+#### Push Notification
+![Push notification video](https://media.giphy.com/media/VzqrLUl8oJCBzMCNX7/giphy.gif)
+## Upload of images to chat room
+#### Camera
+![Camera upload video](https://media.giphy.com/media/fVJRiIXcWTHCccjw0p/giphy.gif)
+#### Gallery
+![Gallery upload video](https://media.giphy.com/media/UTSBrNKzRxJOkfFgTS/giphy.gif)
 
 
 
