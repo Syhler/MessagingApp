@@ -10,6 +10,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -95,6 +97,8 @@ class ChatRoomActivity : AppCompatActivity() {
         setKeyboardListener()
 
         pullDownToRefresh()
+
+        updateSendButtonWhenTyping()
 
         //Sets button actions
         findViewById<ImageButton>(R.id.message_send_button).setOnClickListener { onMessageClick() }
@@ -196,6 +200,33 @@ class ChatRoomActivity : AppCompatActivity() {
         val factory = Dependencies.provideChatRoomViewModelFactory(chatRoomKey, contentResolver)
         return ViewModelProviders.of(this, factory)
             .get(ChatRoomViewModel::class.java)
+    }
+
+    private fun updateSendButtonWhenTyping()
+    {
+        val sendIcon = findViewById<ImageButton>(R.id.message_send_button)
+
+        inputField.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(s: Editable?)
+            {
+                if (s.toString().isBlank())
+                {
+                    sendIcon.setImageResource(R.drawable.ic_send)
+                }
+                else
+                {
+                    sendIcon.setImageResource(R.drawable.ic_send_ready)
+
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+        })
     }
 
     private fun initListViewMessages()

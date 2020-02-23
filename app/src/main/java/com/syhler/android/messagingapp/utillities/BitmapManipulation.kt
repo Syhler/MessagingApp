@@ -58,7 +58,7 @@ object BitmapManipulation
             val f = File(realPath)
             uri = Uri.fromFile(f)
         } catch (e: Exception) {
-            Log.e("Your Error Message", e.message)
+            Log.e("BITMAP_MANIPULATION","Your Error Message", e)
         }
         return uri
     }
