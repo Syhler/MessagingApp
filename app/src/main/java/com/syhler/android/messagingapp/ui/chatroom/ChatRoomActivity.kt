@@ -153,7 +153,10 @@ class ChatRoomActivity : AppCompatActivity() {
         //When user open keyboard scroll down to the latest message
         recyclerView.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
             if (bottom < oldBottom) {
-                recyclerView.postDelayed({ recyclerView.smoothScrollToPosition(messageAdapter.itemCount-1) }, 100)
+                if (messageAdapter.itemCount >= 1)
+                {
+                    recyclerView.postDelayed({ recyclerView.smoothScrollToPosition(messageAdapter.itemCount-1) }, 100)
+                }
             }
         }
     }
@@ -353,7 +356,10 @@ class ChatRoomActivity : AppCompatActivity() {
 
     private fun scrollDownToLatestMessage()
     {
-        recyclerView.postDelayed({recyclerView.scrollToPosition(messageAdapter.itemCount-1)},150)
+        if (messageAdapter.itemCount >= 1)
+        {
+            recyclerView.postDelayed({recyclerView.scrollToPosition(messageAdapter.itemCount-1)},50)
+        }
     }
 
 

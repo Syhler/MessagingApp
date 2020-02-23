@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.syhler.android.messagingapp.data.entites.Message
@@ -26,6 +26,7 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
 
     fun getInitMessages() : LiveData<List<Message>>
     {
+
         messageRepository.getInitMessages(loadSize.toLong()).get().addOnSuccessListener {
             val messagesList : MutableList<Message> = mutableListOf()
 
@@ -36,14 +37,12 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
             messages.value = messagesList
 
         }.addOnCompleteListener{
-            if (messages.value!!.size-1 > 0)
-            {
-                getLatestMessages(messages.value?.get(messages.value!!.size -1)?.timespan!!)
-            }
+            activateIncomingMessages()
         }
 
         return messages
     }
+
 
 
     fun loadPreviousMessages(currentMessage : List<Message>): Task<QuerySnapshot>?
@@ -83,6 +82,38 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
 
     }
 
+    private fun activateIncomingMessages()
+    {
+        if (messages.value!!.size-1 > 0)
+        {
+            loadIncomingMessages(messages.value?.get(messages.value!!.size -1)?.timespan!!)
+        }
+        else
+        {
+            loadIncomingMessages(0)
+        }
+    }
+
+    private fun loadIncomingMessages(lastMessageLoaded : Long)
+    {
+        messageRepository.getMessagesFromNoLimit(lastMessageLoaded).addSnapshotListener { snapshot, e ->
+            if (e != null)
+            {
+                //error
+                return@addSnapshotListener
+            }
+
+            for (documentChange in snapshot?.documentChanges!!)
+            {
+                if (documentChange.type == DocumentChange.Type.ADDED)
+                {
+                    val message = createMessageFromDoc(documentChange.document)
+                    latestMessage.value = message
+                }
+            } }
+    }
+
+
 
     private fun uploadImage(message: Message)
     {
@@ -110,6 +141,7 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
         return null
     }
 
+    /*
     private fun getLatestMessages(fromTimeStamp: Long)
     {
         messageRepository.getLatestMessage(fromTimeStamp).addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
@@ -124,6 +156,8 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
             latestMessage.value = message
         })
     }
+
+     */
 
     private fun createMessageFromDoc(doc : QueryDocumentSnapshot) : Message
     {

@@ -3,6 +3,8 @@ package com.syhler.android.messagingapp.data.repos
 import android.content.ContentResolver
 import android.net.Uri
 import android.webkit.MimeTypeMap
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FileDownloadTask
@@ -17,7 +19,7 @@ class MessageRepository(chatRoomKey : String, private var contentResolver: Conte
     private val messageCollectionPath = "$CHATROOM_PREFIX/$chatRoomKey/messages"
     private val storagePath = "$CHATROOM_PREFIX/$chatRoomKey"
 
-    private var database = FirebaseFirestore.getInstance()
+    private var database : FirebaseFirestore = FirebaseFirestore.getInstance()
     private var storage = FirebaseStorage.getInstance().getReference(storagePath)
 
     fun getInitMessages(numberOfMessages : Long) : Query
@@ -27,6 +29,7 @@ class MessageRepository(chatRoomKey : String, private var contentResolver: Conte
             .limitToLast(numberOfMessages)
     }
 
+    /*
      fun getLatestMessage(fromTimeStamp: Long): Query
     {
         return database.collection(messageCollectionPath)
@@ -34,6 +37,8 @@ class MessageRepository(chatRoomKey : String, private var contentResolver: Conte
             .whereGreaterThan("timespan", fromTimeStamp)
             .limitToLast(1)
     }
+
+     */
 
     fun getMessageFrom(fromTimeStamp : Long, limit : Long) : Query
     {
@@ -43,9 +48,9 @@ class MessageRepository(chatRoomKey : String, private var contentResolver: Conte
             .limitToLast(limit)
     }
 
-    fun getImage(imageUri: Uri) : FileDownloadTask
+    fun getMessagesFromNoLimit(fromTimeStamp : Long) : Query
     {
-        return storage.getFile(imageUri)
+        return database.collection(messageCollectionPath).orderBy("timespan").whereGreaterThan("timespan", fromTimeStamp)
     }
 
     fun uploadImage(imageUri : Uri) : UploadTask

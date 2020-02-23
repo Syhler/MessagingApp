@@ -40,7 +40,7 @@
             android:id="@+id/imageView"
             android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="105dp"
             android:layout_marginTop="20dp"
-            android:layout_marginEnd="106dp" android:layout_marginBottom="112dp"
+            android:layout_marginEnd="105dp" android:layout_marginBottom="112dp"
             app:layout_constraintBottom_toTopOf="@+id/editText" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" app:srcCompat="@drawable/app_icon"/>
