@@ -216,7 +216,6 @@ class ChatRoomActivity : AppCompatActivity() {
                 else
                 {
                     sendIcon.setImageResource(R.drawable.ic_send_ready)
-
                 }
             }
 
