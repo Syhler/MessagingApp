@@ -87,7 +87,7 @@ class LoginActivity : AppCompatActivity()
                 if (result != null) {
                     authenticationHandler.facebook.handleFacebookAccessToken(result.accessToken).addOnCompleteListener {
                         onLogin()
-                        CurrentUser.initialize(this@LoginActivity) //instantiate current user
+                        CurrentUser.initialize() //instantiate current user
                         changeScene()
                     }
                 }
@@ -109,7 +109,7 @@ class LoginActivity : AppCompatActivity()
         authenticationHandler.google.signInGoogle(requestCode, data)?.addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 onLogin()
-                CurrentUser.initialize(this) //instantiate current user
+                CurrentUser.initialize() //instantiate current user
                 changeScene()
             } else {
                 dialog.dismiss()

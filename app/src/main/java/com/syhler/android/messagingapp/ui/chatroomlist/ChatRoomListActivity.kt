@@ -129,13 +129,13 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
             AuthenticationMethod.FACEBOOK ->
             {
                 authenticationHandler.facebook.signOut()
-                CurrentUser.destroy() // empties the current user data
+                CurrentUser.initialize() // empties the current user data
                 changeToLoginScreen()
 
             }
             AuthenticationMethod.GOOGLE -> {
                 authenticationHandler.google.signOut()?.addOnCompleteListener {
-                    CurrentUser.destroy() // empties the current user data
+                    CurrentUser.initialize() // empties the current user data
                     changeToLoginScreen()
                 }
             }

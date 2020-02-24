@@ -379,7 +379,7 @@ class ChatRoomActivity : AppCompatActivity() {
         if (CurrentUser.getInstance().getNotificationStatusFrom(chatRoomKey) == null) openNotificationDialog()
 
         val currentUser = CurrentUser.getInstance()
-        val user = MessageUser(currentUser.imageUri.toString(), currentUser.fullName!!, currentUser.authenticationID) // should change to get image uri
+        val user = MessageUser(currentUser.getImageAsByte(), currentUser.fullName!!, currentUser.authenticationID) // should change to get image uri
         val message = Message(inputField.text.toString(), user, System.currentTimeMillis(), image.toString())
         inputField.setText("")
         viewModel.addMessage(message)

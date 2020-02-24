@@ -12,7 +12,7 @@ class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (CurrentUser.initialize(this).isloggedIn)
+        if (CurrentUser.getInstance().isloggedIn)
         {
             startActivity(Intent(this, ChatRoomListActivity::class.java))
         }
