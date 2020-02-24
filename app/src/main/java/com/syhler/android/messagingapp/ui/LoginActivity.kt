@@ -16,7 +16,6 @@ import com.facebook.login.LoginResult
 import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.authenticate.AuthenticationHandler
 import com.syhler.android.messagingapp.authenticate.CurrentUser
-import com.syhler.android.messagingapp.data.Database
 import com.syhler.android.messagingapp.ui.chatroomlist.ChatRoomListActivity
 import kotlinx.android.synthetic.main.login_activity.*
 
@@ -34,7 +33,6 @@ class LoginActivity : AppCompatActivity()
 
         createDialog()
 
-        Database.getInstance().setupPredefinedChatRooms()
 
         authenticationHandler = AuthenticationHandler(this, getString(R.string.default_web_client_id), dialog)
 
@@ -70,7 +68,6 @@ class LoginActivity : AppCompatActivity()
         dialogLayout = layoutInflater.inflate(R.layout.login_dialog, null)
 
         dialogBuilder.setView(dialogLayout)
-        //alertBuilder.setPositiveButton("Ok") { _, _ -> }
         dialogBuilder.setCancelable(false)
 
         dialog = dialogBuilder.create()
@@ -109,15 +106,14 @@ class LoginActivity : AppCompatActivity()
 
     private fun signInGoogle(requestCode: Int, data: Intent?)
     {
-        //make a null check
         authenticationHandler.google.signInGoogle(requestCode, data)?.addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 onLogin()
                 CurrentUser.initialize() //instantiate current user
                 changeScene()
             } else {
-                // If sign in fails, display a message to the user.
                 dialog.dismiss()
+                Toast.makeText(this, "Google sign in failed", Toast.LENGTH_LONG).show()
             }}
 
     }

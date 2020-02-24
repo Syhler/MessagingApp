@@ -15,7 +15,6 @@ import com.syhler.android.messagingapp.utillities.DateManipulation
 
 class ChatRoomListViewModel(private val repository: ChatRoomListRepository) : ViewModel()
 {
-    private val TAG = "CHATROOM_VIEW_MODEL"
     private var chatRooms : MutableLiveData<List<ChatRoom>> = MutableLiveData()
 
     fun getChatRooms() : LiveData<List<ChatRoom>>
@@ -36,14 +35,12 @@ class ChatRoomListViewModel(private val repository: ChatRoomListRepository) : Vi
 
         }.addOnCompleteListener {
 
-            getLatestMessage(tempChatRooms)
+            getLatestMessageFromRooms(tempChatRooms)
         }
     }
 
-    private fun getLatestMessage(chatRooms: MutableList<ChatRoom>)
+    private fun getLatestMessageFromRooms(chatRooms: MutableList<ChatRoom>)
     {
-        //TODO(maybe redo this, hard to read as fluent english -
-        // happens because we are refference the list of chat rooms instead of retruning a new one)
 
         val queries = getQueryForLatestMessage(chatRooms)
 
@@ -55,6 +52,9 @@ class ChatRoomListViewModel(private val repository: ChatRoomListRepository) : Vi
         }
     }
 
+    /**
+     * Creates the queries to get the latest image from a list of chat rooms
+     */
     private fun getQueryForLatestMessage(chatRooms : List<ChatRoom>) : List<Task<QuerySnapshot>>
     {
         val data : MutableList<Task<QuerySnapshot>> = arrayListOf()

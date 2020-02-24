@@ -16,7 +16,10 @@ import java.net.URL
 object BitmapManipulation
 {
 
-    fun toByte(image: Bitmap?) : String
+    /**
+     * converts image to base64
+     */
+    fun toBase64(image: Bitmap?) : String
     {
         if (image == null) return ""
 
@@ -26,20 +29,10 @@ object BitmapManipulation
         return Base64.encodeToString(b, Base64.DEFAULT)
     }
 
-    fun getResized(image: Bitmap, maxSize: Int): Bitmap? {
-        var width = image.width
-        var height = image.height
-        val bitmapRatio = width.toFloat() / height.toFloat()
-        if (bitmapRatio > 0) {
-            width = maxSize
-            height = (width / bitmapRatio).toInt()
-        } else {
-            height = maxSize
-            width = (height * bitmapRatio).toInt()
-        }
-        return Bitmap.createScaledBitmap(image, width, height, true)
-    }
 
+    /**
+     * converts a bitmap to a uri
+     */
     fun toUriConverter(mBitmap: Bitmap?, context: Context): Uri? {
         var uri: Uri? = null
         try {
@@ -63,6 +56,9 @@ object BitmapManipulation
         return uri
     }
 
+    /**
+     * returns a bitmap from a web address
+     */
     fun getFromURL(src: String?) : Bitmap?
     {
         return try {
@@ -77,7 +73,10 @@ object BitmapManipulation
         }
     }
 
-    fun getFromByte(image : String?) : Bitmap?
+    /**
+     * returns a bitmap from base64
+     */
+    fun getFromBase64(image : String?) : Bitmap?
     {
         return try {
             val encodeByte: ByteArray = Base64.decode(image, Base64.DEFAULT)

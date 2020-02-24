@@ -4,18 +4,13 @@ import android.content.Context
 import android.util.Log
 import com.android.volley.RequestQueue
 import com.android.volley.Response
-import com.android.volley.ServerError
-import com.android.volley.VolleyError
-import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.syhler.android.messagingapp.authenticate.CurrentUser
 import com.syhler.android.messagingapp.data.entites.Message
-import com.syhler.android.messagingapp.utillities.BitmapManipulation
 import com.syhler.android.messagingapp.utillities.KeyFields
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.UnsupportedEncodingException
 
 
 class SendingNotification(context: Context)
@@ -34,11 +29,11 @@ class SendingNotification(context: Context)
     {
         if (chatRoomKey == null || chatRoomKey.isBlank())
         {
-            Log.w(TAG, "topic name is empty")
+            Log.w(TAG, "topic name doesn't exist")
             return
         }
 
-        val topic = "/topics/$chatRoomKey" //topic has to match what the receiver subscribed to
+        val topicName = "/topics/$chatRoomKey" //topic has to match what the receiver subscribed to
 
         val notification = JSONObject()
         val notificationBody = JSONObject()
@@ -50,7 +45,7 @@ class SendingNotification(context: Context)
             notificationBody.put(KeyFields.chatRoomName, chatRoomName)
             notificationBody.put(KeyFields.currentUserAuth, CurrentUser.getInstance().authenticationID)
 
-            notification.put("to", topic)
+            notification.put("to", topicName)
             notification.put("data", notificationBody)
         } catch (e: JSONException) {
             Log.e(TAG, "onCreate: " + e.message)
@@ -66,7 +61,7 @@ class SendingNotification(context: Context)
                 Log.i(TAG, "onResponse: $response")
             },
             Response.ErrorListener {
-                Log.e(TAG, "onErrorResponse: Something wnet wrong", it)
+                Log.e(TAG, "onErrorResponse: Something went wrong", it)
             }) {
 
             override fun getHeaders(): Map<String, String> {

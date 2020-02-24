@@ -141,24 +141,6 @@ class ChatRoomViewModel(private val messageRepository: MessageRepository) : View
         return null
     }
 
-    /*
-    private fun getLatestMessages(fromTimeStamp: Long)
-    {
-        messageRepository.getLatestMessage(fromTimeStamp).addSnapshotListener(EventListener<QuerySnapshot> { value, e ->
-            if (e != null) {
-                Log.w(TAG, "EventListener failed",e)
-                return@EventListener
-            }
-            var message : Message? = null
-            for (doc in value!!) {
-                message = createMessageFromDoc(doc)
-            }
-            latestMessage.value = message
-        })
-    }
-
-     */
-
     private fun createMessageFromDoc(doc : QueryDocumentSnapshot) : Message
     {
         val tempMessage = doc.toObject(Message::class.java)

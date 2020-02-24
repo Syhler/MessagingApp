@@ -1,21 +1,19 @@
 package com.syhler.android.messagingapp.data
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.syhler.android.messagingapp.R
 import com.syhler.android.messagingapp.data.entites.ChatRoom
-import kotlinx.android.synthetic.main.activity_chat_room_list.view.*
 
-class Database
+class FakeDatabaseSetup
 {
 
     companion object
     {
-        private var instance : Database? = null
+        private var instance : FakeDatabaseSetup? = null
 
-        fun getInstance() : Database
+        fun getInstance() : FakeDatabaseSetup
         {
             return if (instance == null) {
-                Database()
+                FakeDatabaseSetup()
             } else {
                 instance!!
             }

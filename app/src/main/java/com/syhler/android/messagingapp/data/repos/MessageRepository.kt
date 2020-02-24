@@ -19,8 +19,8 @@ class MessageRepository(chatRoomKey : String, private var contentResolver: Conte
     private val messageCollectionPath = "$CHATROOM_PREFIX/$chatRoomKey/messages"
     private val storagePath = "$CHATROOM_PREFIX/$chatRoomKey"
 
-    private var database : FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var storage = FirebaseStorage.getInstance().getReference(storagePath)
+    private val database : FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val storage = FirebaseStorage.getInstance().getReference(storagePath)
 
     fun getInitMessages(numberOfMessages : Long) : Query
     {

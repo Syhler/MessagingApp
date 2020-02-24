@@ -28,6 +28,9 @@ class CurrentUserMessageViewHolder constructor(itemView : View) : RecyclerView.V
         }
     }
 
+    /**
+     * Tries looking for image in firebase storage, if it doesnt exist it tries loading the image from your phone location
+     */
     private fun displayImage(imageUri : String)
     {
         try {

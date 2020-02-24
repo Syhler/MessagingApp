@@ -5,7 +5,10 @@ import com.facebook.Profile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
+import com.syhler.android.messagingapp.data.entites.UserNotificationStatus
+import com.syhler.android.messagingapp.data.repos.UserRepository
 import com.syhler.android.messagingapp.utillities.BitmapManipulation
+import com.syhler.android.messagingapp.utillities.KeyFields.chatRoomKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
@@ -18,14 +21,19 @@ class CurrentUser
     var fullName : String? = ""
     var image : Bitmap? = null
     lateinit var authenticationMethod: AuthenticationMethod
-    private var photoUrl : String = ""
-    var chatRoomKey : String = ""
+    var currentChatRoomKey : String = ""
     var authenticationID : String = ""
     var isloggedIn : Boolean = false
-    var deviceId : String = ""
+
+    private var photoUrl : String = ""
+    private val userRepository : UserRepository
+    private val notificationStatusForRooms : MutableList<UserNotificationStatus> = mutableListOf()
+
 
     init {
         loadUserData()
+        userRepository = UserRepository(authenticationID)
+        loadNotificationStatus()
         loadProfilePicture()
     }
 
@@ -54,10 +62,47 @@ class CurrentUser
     {
         if (image != null)
         {
-            return BitmapManipulation.toByte(image!!)
+            return BitmapManipulation.toBase64(image!!)
         }
         return ""
     }
+
+    fun addNotificationStatus(activate : Boolean, chatRoomKey: String)
+    {
+        userRepository.addNotificationStatusForRoom(activate, chatRoomKey)
+        notificationStatusForRooms.add(UserNotificationStatus(true, chatRoomKey))
+    }
+
+    fun getNotificationStatusFrom(chatRoomKey : String?) : UserNotificationStatus?
+    {
+        notificationStatusForRooms.forEach {
+            if (it.chatRoomKey == chatRoomKey)
+            {
+                return it
+            }
+        }
+
+        return null
+    }
+
+
+    private fun loadNotificationStatus()
+    {
+        val collection = userRepository.getNotificationStatusForAllRooms()
+
+        collection?.get()?.addOnSuccessListener { userCollection ->
+
+            for (doc in userCollection)
+            {
+                val notificationStatus = doc?.toObject(UserNotificationStatus::class.java)
+                if (notificationStatus != null)
+                {
+                    notificationStatusForRooms.add(notificationStatus)
+                }
+            }
+        }
+    }
+
 
     private fun loadUserData()
     {

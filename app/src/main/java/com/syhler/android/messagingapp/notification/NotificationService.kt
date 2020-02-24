@@ -37,7 +37,7 @@ class NotificationService : FirebaseMessagingService() {
         val chatRoomKey = remoteMessage.data[KeyFields.chatRoomKey]
 
         //makes sure you dont receives any messages if you already in the room the messages are comming from
-        if (chatRoomKey != null && chatRoomKey == CurrentUser.getInstance().chatRoomKey) {
+        if (chatRoomKey != null && chatRoomKey == CurrentUser.getInstance().currentChatRoomKey) {
             return
         }
 
@@ -46,7 +46,7 @@ class NotificationService : FirebaseMessagingService() {
         val intent = Intent(this, ChatRoomActivity::class.java)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val notificationID = Random().nextInt(3000)// setting a static id because of multiple chatting
+        val notificationID = Random().nextInt(3000)
 
         val chatRoomName = remoteMessage.data[KeyFields.chatRoomName]
 

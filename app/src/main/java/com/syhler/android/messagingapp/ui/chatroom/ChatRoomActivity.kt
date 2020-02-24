@@ -82,8 +82,10 @@ class ChatRoomActivity : AppCompatActivity() {
 
         if (chatRoomKey != null) {
             viewModel = createViewModel(chatRoomKey!!)
-            CurrentUser.getInstance().chatRoomKey = chatRoomKey!!
+            CurrentUser.getInstance().currentChatRoomKey = chatRoomKey!!
         }
+
+        //sets components
         inputField = findViewById(R.id.message_input_field)
         activityBar = findViewById(R.id.chat_room_activity_bar)
         progressBar = findViewById(R.id.progress_bar)
@@ -135,6 +137,9 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
 
+    /**
+     * When users open the activity menu
+     */
     private fun onAddClick()
     {
         if (activityBar.visibility == View.GONE) {
@@ -155,7 +160,7 @@ class ChatRoomActivity : AppCompatActivity() {
         }
 
         //When user open keyboard scroll down to the latest message
-        recyclerView.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+        recyclerView.addOnLayoutChangeListener { _, _, _, _, bottom, _, _, _, oldBottom ->
             if (bottom < oldBottom) {
                 if (messageAdapter.itemCount >= 1)
                 {
@@ -190,7 +195,6 @@ class ChatRoomActivity : AppCompatActivity() {
         {
             val notificationDialog = AskForNotificationDialog(chatRoomKey!!)
             notificationDialog.show(supportFragmentManager, "NotificationDialog")
-            TempNotificationClass.hasOpenedDialog = true
 
         }
     }
@@ -205,8 +209,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private fun updateSendButtonWhenTyping()
     {
         val sendIcon = findViewById<ImageButton>(R.id.message_send_button)
-
-        inputField.addTextChangedListener(object : TextWatcher{
+        inputField.addTextChangedListener( object : TextWatcher{
             override fun afterTextChanged(s: Editable?)
             {
                 if (s.toString().isBlank())
@@ -255,10 +258,9 @@ class ChatRoomActivity : AppCompatActivity() {
             {
                 if (message.messageUser.userAuthID != CurrentUser.getInstance().authenticationID)
                 {
-                    val notificationSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                    val sound = RingtoneManager.getRingtone(this, notificationSoundUri)
-                    sound.play()
+
                     messageAdapter.add(message)
+                    playNotificationSound()
 
                     if (!recyclerView.canScrollVertically(1))
                     {
@@ -267,6 +269,13 @@ class ChatRoomActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun playNotificationSound()
+    {
+        val notificationSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val sound = RingtoneManager.getRingtone(this, notificationSoundUri)
+        sound.play()
     }
 
 
@@ -350,7 +359,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     private fun setKeyboardListener()
     {
-        inputField.setOnEditorActionListener { textView, actionId, keyEvent ->
+        inputField.setOnEditorActionListener { _, actionId, keyEvent ->
 
             if (actionId == EditorInfo.IME_ACTION_DONE ||
                 keyEvent.action == KeyEvent.ACTION_DOWN ||
@@ -367,7 +376,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     private fun sendMessage(image : Uri)
     {
-        if (!TempNotificationClass.hasOpenedDialog) openNotificationDialog()
+        if (CurrentUser.getInstance().getNotificationStatusFrom(chatRoomKey) == null) openNotificationDialog()
 
         val currentUser = CurrentUser.getInstance()
         val user = MessageUser(currentUser.getImageAsByte(), currentUser.fullName!!, currentUser.authenticationID) // should change to get image uri
@@ -396,17 +405,17 @@ class ChatRoomActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        CurrentUser.getInstance().chatRoomKey = ""
+        CurrentUser.getInstance().currentChatRoomKey = ""
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
     }
 
     override fun onPause() {
         super.onPause()
-        CurrentUser.getInstance().chatRoomKey = ""
+        CurrentUser.getInstance().currentChatRoomKey = ""
     }
 
     override fun onResume() {
         super.onResume()
-        CurrentUser.getInstance().chatRoomKey = chatRoomKey!!
+        CurrentUser.getInstance().currentChatRoomKey = chatRoomKey!!
     }
 }

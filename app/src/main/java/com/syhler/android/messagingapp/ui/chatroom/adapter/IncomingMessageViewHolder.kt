@@ -53,7 +53,7 @@ class IncomingMessageViewHolder constructor(itemView: View) : RecyclerView.ViewH
     private fun setIncomingPicture(imageBinary: String?)
     {
         val image =
-            BitmapManipulation.getFromByte(imageBinary)
+            BitmapManipulation.getFromBase64(imageBinary)
         if (image != null)
         {
             avatar.setImageBitmap(image)

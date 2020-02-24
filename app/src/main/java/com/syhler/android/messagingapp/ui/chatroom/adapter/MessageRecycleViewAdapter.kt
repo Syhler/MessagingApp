@@ -12,6 +12,9 @@ class MessageRecycleViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(
 
     var messages : MutableList<Message> = arrayListOf()
 
+    /**
+     * Replaces already existing messages
+     */
     fun submitMessages(value : List<Message>) : Int
     {
         val countBeforeAdd = messages.size

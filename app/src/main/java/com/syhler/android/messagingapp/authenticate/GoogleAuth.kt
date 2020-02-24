@@ -29,8 +29,6 @@ class GoogleAuth(private val context: Context?, requestIdToken: String, private 
             .requestEmail()
             .build()
 
-        //check for null
-
         googleSignInClient = GoogleSignIn.getClient(context!!, gso)
 
 
@@ -52,7 +50,7 @@ class GoogleAuth(private val context: Context?, requestIdToken: String, private 
             return try {
                 // Google Sign In was successful
                 val account = task.getResult(ApiException::class.java)
-                firebaseAuthWithGoogle(account!!)
+                signInfirebaseAuth(account!!)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
                 dialog?.dismiss()
@@ -63,9 +61,9 @@ class GoogleAuth(private val context: Context?, requestIdToken: String, private 
         return null
     }
 
-    private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) : Task<AuthResult>  {
+    private fun signInfirebaseAuth(acct: GoogleSignInAccount) : Task<AuthResult>
+    {
 
-        //return signin with credential and add the "addoncompletelistner later"
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
         return firebaseAuth.signInWithCredential(credential)
     }
