@@ -1,5 +1,7 @@
 # MessagingApp
 Development Task for House of Code : [document](https://github.com/Syhler/MessagingApp/blob/master/Development%20Task%20-%20Google%20Docs%20(1).pdf)
+
+**Total development time:** 51 hours and 20 minutes
 ## Splash screen
 ![Splash screen video](https://media.giphy.com/media/hofoF5nN1OgGQJBybM/giphy.gif)
 ## Login screen
