@@ -85,7 +85,6 @@ class CurrentUser
         return null
     }
 
-
     private fun loadNotificationStatus()
     {
         val collection = userRepository.getNotificationStatusForAllRooms()

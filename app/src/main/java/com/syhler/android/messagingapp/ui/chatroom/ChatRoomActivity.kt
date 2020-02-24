@@ -34,19 +34,8 @@ import com.syhler.android.messagingapp.utillities.Dependencies
 import com.syhler.android.messagingapp.utillities.KeyFields
 import com.syhler.android.messagingapp.viewmodels.ChatRoomViewModel
 
-
-class TempNotificationClass
-{
-    companion object
-    {
-        var hasOpenedDialog = false //TODO(REMOVE WHEN IMPLEMENTED SQLITE)
-    }
-}
-
 class ChatRoomActivity : AppCompatActivity() {
 
-
-    //TODO(null check viewmodel)
 
     private val CAMERA_REQUEST_CODE: Int = 3
     private val CAMERA_PERMISSION_CODE: Int = 2

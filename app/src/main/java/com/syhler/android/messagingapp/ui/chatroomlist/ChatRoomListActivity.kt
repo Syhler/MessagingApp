@@ -116,7 +116,7 @@ class ChatRoomListActivity : AppCompatActivity(), View.OnClickListener{
         if (chatRooms.size > position)
         {
             val chatRoom = chatRooms[position]
-            intent.putExtra(KeyFields.chatRoomKey, chatRoom.key) //TODO(create a class that hold all intent values)
+            intent.putExtra(KeyFields.chatRoomKey, chatRoom.key)
             intent.putExtra(KeyFields.chatRoomName, chatRoom.title)
         }
         startActivity(intent)

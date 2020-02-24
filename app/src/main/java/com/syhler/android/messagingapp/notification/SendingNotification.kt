@@ -41,7 +41,7 @@ class SendingNotification(context: Context)
         try {
             notificationBody.put("title", "New message from ${message.messageUser.fullName} : $chatRoomName")
             notificationBody.put("message", message.text)
-            notificationBody.put(KeyFields.chatRoomKey, chatRoomKey) //TODO(redo this? maybe?)
+            notificationBody.put(KeyFields.chatRoomKey, chatRoomKey)
             notificationBody.put(KeyFields.chatRoomName, chatRoomName)
             notificationBody.put(KeyFields.currentUserAuth, CurrentUser.getInstance().authenticationID)
 

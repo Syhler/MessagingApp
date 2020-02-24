@@ -49,7 +49,6 @@ class IncomingMessageViewHolder constructor(itemView: View) : RecyclerView.ViewH
         }
     }
 
-    //TODO(update so that the image get saved in firebase)
     private fun setIncomingPicture(imageBinary: String?)
     {
         val image =
