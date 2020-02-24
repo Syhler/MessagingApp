@@ -30,12 +30,15 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".ui.chatroom.ChatRoomActivity">
+        <activity android:name=".ui.chatroom.ChatRoomActivity"
+                  android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".ui.chatroomlist.ChatRoomListActivity">
+        <activity android:name=".ui.chatroomlist.ChatRoomListActivity"
+                  android:screenOrientation="portrait">
         </activity>
         <activity android:name=".ui.SplashScreenActivity"
-                  android:theme="@style/SplashScreen">
+                  android:theme="@style/SplashScreen"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
