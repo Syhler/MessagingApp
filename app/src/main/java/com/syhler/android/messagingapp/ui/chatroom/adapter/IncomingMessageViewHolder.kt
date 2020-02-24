@@ -24,8 +24,7 @@ class IncomingMessageViewHolder constructor(itemView: View) : RecyclerView.ViewH
     fun bind(message: Message)
     {
         name.text = message.messageUser.fullName + " - " + getTimeNow(message.date)
-        setIncomingPicture(message.messageUser.image)
-
+        displayAvatar(message.messageUser.image)
 
         if (!message.imageUri.isBlank())
         {
@@ -49,16 +48,17 @@ class IncomingMessageViewHolder constructor(itemView: View) : RecyclerView.ViewH
         }
     }
 
-    //TODO(update so that the image get saved in firebase)
-    private fun setIncomingPicture(imageBinary: String?)
+    private fun displayAvatar(imageUri: String?)
     {
-        val image =
-            BitmapManipulation.getFromBase64(imageBinary)
-        if (image != null)
-        {
-            avatar.setImageBitmap(image)
-        }
+        Glide.with(itemView.context)
+            .load(imageUri)
+            .placeholder(R.drawable.ic_launcher_background)
+            .error(R.drawable.ic_launcher_foreground)
+            .override(500,500)
+            .dontAnimate()
+            .into(avatar)
     }
+
 
     @SuppressLint("SimpleDateFormat")
     private fun getTimeNow(date : Date) : String

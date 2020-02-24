@@ -1,17 +1,18 @@
 package com.syhler.android.messagingapp.data.repos
 
+import android.graphics.Bitmap
 import android.net.Uri
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.syhler.android.messagingapp.data.entites.UserNotificationStatus
 import java.lang.Exception
 
-class UserRepository(authenticationId : String)
+class UserRepository(private val authenticationId : String)
 {
     private val userCollectionPath = "users/$authenticationId"
-    private val storagePath = "users/$authenticationId"
+    private val storagePath = "users/profile_pictures"
 
     private val database : FirebaseFirestore = FirebaseFirestore.getInstance()
     private val storage : FirebaseStorage = FirebaseStorage.getInstance()
@@ -32,12 +33,17 @@ class UserRepository(authenticationId : String)
 
     }
 
-    fun addPicture(imageUri : Uri)
+    fun getProfilePictureReference() : StorageReference
     {
-        val ref =  storage.getReference(storagePath).child("dd.jpg")
-
-        ref.putFile(imageUri).addOnFailureListener {
-            val e = it
-        }
+        return storage.getReference(storagePath).child("${authenticationId}.jpeg")
     }
+
+    fun getPictureForUser()
+    {
+        val ref = storage.getReference(storagePath).child("${authenticationId}.jpeg")
+
+    }
+
+
+
 }

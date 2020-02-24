@@ -1,30 +1,35 @@
 package com.syhler.android.messagingapp.authenticate
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
 import com.facebook.Profile
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.UploadTask
 import com.syhler.android.messagingapp.authenticate.enums.AuthenticationMethod
 import com.syhler.android.messagingapp.data.entites.UserNotificationStatus
 import com.syhler.android.messagingapp.data.repos.UserRepository
 import com.syhler.android.messagingapp.utillities.BitmapManipulation
-import com.syhler.android.messagingapp.utillities.KeyFields.chatRoomKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 
-class CurrentUser
+class CurrentUser(private val context: Context)
 {
 
     var fullName : String? = ""
-    var image : Bitmap? = null
     lateinit var authenticationMethod: AuthenticationMethod
     var currentChatRoomKey : String = ""
     var authenticationID : String = ""
     var isloggedIn : Boolean = false
+    var imageUri : Uri = Uri.EMPTY
 
+
+    private var tempImage : Bitmap? = null
     private var photoUrl : String = ""
     private val userRepository : UserRepository
     private val notificationStatusForRooms : MutableList<UserNotificationStatus> = mutableListOf()
@@ -33,6 +38,7 @@ class CurrentUser
     init {
         loadUserData()
         userRepository = UserRepository(authenticationID)
+        userRepository.getPictureForUser()
         loadNotificationStatus()
         loadProfilePicture()
     }
@@ -45,27 +51,24 @@ class CurrentUser
         fun getInstance() : CurrentUser
         {
            return if (instance == null) {
-                instance = CurrentUser()
-                instance!!
+               throw Exception("Not instantiated - please initialize object first")
             } else{
                 instance!!
             }
         }
 
-        fun initialize()
+        fun initialize(context: Context) : CurrentUser
         {
-            instance = CurrentUser()
+            instance = CurrentUser(context)
+            return instance!!
+        }
+
+        fun destroy()
+        {
+            instance = null
         }
     }
 
-    fun getImageAsByte(): String?
-    {
-        if (image != null)
-        {
-            return BitmapManipulation.toBase64(image!!)
-        }
-        return ""
-    }
 
     fun addNotificationStatus(activate : Boolean, chatRoomKey: String)
     {
@@ -103,7 +106,6 @@ class CurrentUser
         }
     }
 
-
     private fun loadUserData()
     {
         val googleCurrentUser = FirebaseAuth.getInstance().currentUser
@@ -138,22 +140,54 @@ class CurrentUser
         isloggedIn = true
     }
 
-    //save it to disk and only load from internet if picture not already found in db
+
     private fun loadProfilePicture()
     {
-        if (image == null)
+        if (tempImage == null)
         {
-            getBitmapFromURL(photoUrl)
+            val ref =userRepository.getProfilePictureReference()
+            ref.downloadUrl
+                .addOnSuccessListener {
+                    imageUri = it
+                }
+                .addOnFailureListener {
+                    uploadImage(ref)
+                }
+
         }
     }
 
+    private fun uploadImage(ref : StorageReference)
+    {
+        getBitmapFromURL(photoUrl).invokeOnCompletion {
+            val uri = BitmapManipulation.toUriConverter(tempImage, context)
+            if (uri != null)
+            {
+                val uploadTask = ref.putFile(uri)
+                getNewlyaddedImageUrl(uploadTask)
+            }
+        }
+    }
+
+    private fun getNewlyaddedImageUrl(uploadTask: UploadTask)
+    {
+        uploadTask.addOnSuccessListener{taskSnapshot: UploadTask.TaskSnapshot? ->
+
+            val uploadedFileUri = taskSnapshot?.uploadSessionUri
+            if (uploadedFileUri != null)
+            {
+                imageUri = uploadedFileUri
+            }
+
+        }
+    }
 
     private fun getBitmapFromURL(src: String?) : Job {
         return CoroutineScope(IO).launch {
             val bitmap = BitmapManipulation.getFromURL(src)
             if (bitmap != null)
             {
-                image = bitmap
+                tempImage = bitmap
             }
         }
     }
